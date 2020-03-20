@@ -1,5 +1,7 @@
 api_config.py
 
+old_stuff/
+
 .vscode/
 venv/
 __pycache__/
