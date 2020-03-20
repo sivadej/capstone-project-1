@@ -3,6 +3,16 @@
 {% block body %}
 <h1>{{total}} Search Results</h1>
 {% for movie in movies %}
-<p><img src="{{movie.img}}" alt="{{movie.title}}"><br>{{movie.title}}<br>{{movie.synopsis}}</p>
+<p><a href="/movie/{{movie.id}}"><img src="{{movie.img}}"
+            alt="{{movie.title}}"><br>{{movie.title}}</a><br>{{movie.synopsis}}<br>
+    <a href="https://www.netflix.com/watch/{{movie.nfid}}">[ Watch on Netflix ]</a><br>
+    [ Add to Watchlist ]
+</p>
+{% endfor %}
+
+<h1>{{total2}} Reverse Search Results</h1>
+{% for movie in movies2 %}
+<p><a href="https://www.netflix.com/watch/{{movie.nfid}}"><img src="{{movie.img}}"
+            alt="{{movie.title}}"><br>{{movie.title}}</a><br>{{movie.synopsis}}</p>
 {% endfor %}
 {% endblock %}

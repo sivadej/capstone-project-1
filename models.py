@@ -35,7 +35,7 @@ class Movie(db.Model):
     image_url = db.Column(db.String)
     synopsis = db.Column(db.Text)
     year = db.Column(db.Integer)
-    rating = db.Column(db.String(5))
+    imdb_id = db.Column(db.String(20))
     video_type = db.Column(db.String(8), nullable=False)
 
     #watchlists = db.relationship('Watchlist', secondary='watchlists_movies')
