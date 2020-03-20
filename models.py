@@ -25,7 +25,7 @@ class Watchlist(db.Model):
     is_shared = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    movies = db.relationship('Movie', secondary='watchlists_movies', backref=db.backref('watchlists', lazy='dynamic'))
+    movies = db.relationship('Movie', secondary='watchlists_movies', backref=db.backref('watchlists', lazy=True))
 
 class Movie(db.Model):
     __tablename__ = 'movies'
@@ -38,7 +38,7 @@ class Movie(db.Model):
     rating = db.Column(db.String(5))
     video_type = db.Column(db.String(8), nullable=False)
 
-    watchlists = db.relationship('Watchlist', secondary='watchlists_movies')
+    #watchlists = db.relationship('Watchlist', secondary='watchlists_movies')
 
 class Watchlist_Movie(db.Model):
     __tablename__ = 'watchlists_movies'
