@@ -1,6 +1,6 @@
 from api_config import API_KEY, API_HOST
 
-file_name = 'myresponse.json'
+file_name = 'myresponse3.json'
 
 query = '' #leave blank
 syear = 1950 #start year
