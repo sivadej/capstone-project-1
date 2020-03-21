@@ -1,4 +1,5 @@
 from api_config import API2_KEY, API2_HOST
+from html import unescape
 
 file_name = 'NG_response2.json'
 
@@ -50,7 +51,7 @@ response = requests.request("GET", url, headers=headers)
 #print(response.json())
 #print(response.text)
 f = open(file_name,'w')
-f.write(response.text)
+f.write(unescape(response.text))
 f.close()
 print(url)
 print(f'results written to {file_name}')

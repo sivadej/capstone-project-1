@@ -1,5 +1,10 @@
 {% extends '_base.html' %}
-{% block title %}TITLE HERE{% endblock %}
+{% block title %}{{movie.title}} - What2Watch{% endblock %}
 {% block body %}
-
+<h1>{{movie.title}}</h1>
+<hr>
+<p><img src="{{movie.image_url}}" alt="{{movie.title}}"><br>{{movie.synopsis}}<br>
+    <a href="https://www.netflix.com/watch/{{movie.netflix_id}}">[ Watch on Netflix ]</a><br>
+    [ Add to Watchlist ]
+</p>
 {% endblock %}

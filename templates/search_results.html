@@ -1,12 +1,12 @@
 {% extends '_base.html' %}
 {% block title %}Search{% endblock %}
 {% block body %}
-<h1>{{total}} Search Results</h1>
+<h1>{{total}} Search Results. Showing {{movies|count}}</h1>
 {% for movie in movies %}
-<p><a href="/movie/{{movie.id}}"><img src="{{movie.img}}"
+<p><a href="/search-movie/{{movie.id}}"><img src="{{movie.img}}"
             alt="{{movie.title}}"><br>{{movie.title}}</a><br>{{movie.synopsis}}<br>
     <a href="https://www.netflix.com/watch/{{movie.nfid}}">[ Watch on Netflix ]</a><br>
-    [ Add to Watchlist ]
+    [ Add to Watchlist ] UNOGS: {{movie.id}}
 </p>
 {% endfor %}
 

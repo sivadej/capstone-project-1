@@ -11,9 +11,9 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///what2watch'
 app.config['SECRET_KEY'] = 'verysecretindeed'
-#app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = True
 
 debug = DebugToolbarExtension(app)
 
@@ -53,3 +53,24 @@ def show_sample_data():
     total = data['total']
     save_to_db(movies)
     return render_template('search_results.html', movies=movies, total=total)
+
+# route handles unogs id, handles dbmovie, redirect to movie detail by dbmovie id
+
+@app.route('/search-movie/<int:unogs_id>')
+def get_movie_from_unogs_id(unogs_id):
+    movie = get_dbmovie(unogs_id)
+    if movie is None:
+        #movie doesn't exist in db yet, so perform api call from netflix id?
+        print('movie not found, adding to db')
+    return redirect(f'/movie/{movie.id}/details')
+
+@app.route('/movie/<int:id>/details')
+def show_movie_details(id):
+    movie = Movie.query.get(id)
+    return render_template('movie_details.html', movie=movie)
+
+def get_dbmovie(unogs_id):
+    dbmovie = Movie.query.filter(Movie.unogs_id == unogs_id).one_or_none()
+    if dbmovie is None:
+        return None
+    return dbmovie
