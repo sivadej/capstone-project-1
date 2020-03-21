@@ -5,20 +5,23 @@
 <h1>{{total}} Search Results. Showing {{movies|count}}</h1>
 
 
-<div class="card-columns">
+<div class="row">
     {% for movie in movies %}
-    <div class="card">
-        <img class="card-img-top zoom" src="{{movie.img}}" alt="{{movie.title}}">
-        <div class="card-body">
-            <h4 class="card-title">{{movie.title}}</h4>
-            <p class="card-text">{{movie.synopsis}}</p>
-            <p class="card-text text-center"><a href="#" class="btn btn-danger">Watch on Netflix</a> <a href="#"
-                    class="btn btn-secondary">Add to Watchlist</a></p>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+        <div class="card mb-4">
+            <img class="card-img-top zoom" src="{{movie.img}}" alt="{{movie.title}}">
+            <div class="card-body">
+                <p class="video-type">{{movie.vtype}}</p>
+                <h4 class="card-title pt-0">{{movie.title}}</h4>
+                <p class="card-text">{{movie.synopsis}}</p>
+                <p class="card-text text-center"><a href="https://www.netflix.com/watch/{{movie.nfid}}" class="btn btn-danger">Watch on Netflix</a> <a href="#"
+                        class="btn btn-secondary">Add to Watchlist</a></p>
+            </div>
+            {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
+            <div class="card-footer text-center"><a href="https://www.imdb.com/title/{{movie.imdbid}}">More Info on IMDB</a>
+            </div>
+            {% endif %}
         </div>
-        {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
-        <div class="card-footer text-center"><a href="https://www.imdb.com/title/{{movie.imdbid}}">More Info on IMDB</a>
-        </div>
-        {% endif %}
     </div>
     {% endfor %}
 </div>

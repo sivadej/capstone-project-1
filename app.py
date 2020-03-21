@@ -9,7 +9,7 @@ from forms import MovieSearchForm
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///what2watch'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/what2watch'
 app.config['SECRET_KEY'] = 'verysecretindeed'
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -52,7 +52,7 @@ def show_sample_data():
     movies = data['results']
     total = data['total']
     #import pdb;pdb.set_trace()
-    save_to_db(movies)
+    #save_to_db(movies)
     return render_template('search_results.html', movies=movies, total=total)
 
 # route handles unogs id, handles dbmovie, redirect to movie detail by dbmovie id

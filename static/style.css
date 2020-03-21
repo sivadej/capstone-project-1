@@ -33,3 +33,11 @@ h1 {
   .zoom:hover {
     transform: scale(1.03);
   }
+
+  .video-type {
+      font-size: 0.8rem;
+      margin-bottom: 0px;
+      text-align: left;
+      text-transform: capitalize;
+      color: #909090
+  }
