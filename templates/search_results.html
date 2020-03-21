@@ -14,8 +14,7 @@
                 <p class="video-type">{{movie.vtype}}</p>
                 <h4 class="card-title pt-0">{{movie.title}}</h4>
                 <p class="card-text">{{movie.synopsis}}</p>
-                <p class="card-text text-center"><a href="https://www.netflix.com/watch/{{movie.nfid}}" class="btn btn-danger">Watch on Netflix</a> <a href="#"
-                        class="btn btn-secondary">Add to Watchlist</a></p>
+                <p class="card-text text-center"><a href="https://www.netflix.com/watch/{{movie.nfid}}" class="btn btn-sm btn-danger">Watch on Netflix</a><button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#watchlist-modal">Add to List</button></p>
             </div>
             {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
             <div class="card-footer text-center"><a href="https://www.imdb.com/title/{{movie.imdbid}}">More Info on IMDB</a>
@@ -26,4 +25,34 @@
     {% endfor %}
 </div>
 
+  
+    <!-- The Modal -->
+    <div class="modal fade" id="watchlist-modal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+          
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Add to Watchlist</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Modal body -->
+            <div class="modal-body">
+              Choose a list
+              Add a new list
+            </div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
 {% endblock %}
+
+
+    
