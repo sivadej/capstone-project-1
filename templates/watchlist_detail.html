@@ -1,5 +1,12 @@
 {% extends '_base.html' %}
 {% block title %}TITLE HERE{% endblock %}
 {% block body %}
+<h1>{{watchlist.title}}</h1>
+<h3>{{watchlist.description}}</h3>
 
+<ul>
+    {%for movie in watchlist.movies%}
+    <li><a href="/movie/{{movie.id}}">{{movie.title}}</a></li>
+    {%endfor%}
+</ul>
 {% endblock %}

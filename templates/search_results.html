@@ -1,18 +1,19 @@
 {% extends '_base.html' %}
 {% block title %}Search{% endblock %}
 {% block body %}
+
 <h1>{{total}} Search Results. Showing {{movies|count}}</h1>
 {% for movie in movies %}
-<p><a href="/search-movie/{{movie.id}}"><img src="{{movie.img}}"
-            alt="{{movie.title}}"><br>{{movie.title}}</a><br>{{movie.synopsis}}<br>
+<p>
+    <img src="{{movie.img}}" alt="{{movie.title}}"><br>{{movie.title}}<br>{{movie.synopsis}}<br>
     <a href="https://www.netflix.com/watch/{{movie.nfid}}">[ Watch on Netflix ]</a><br>
-    [ Add to Watchlist ] UNOGS: {{movie.id}}
+    [ Add to Watchlist ] UNOGS: {{movie.id}} [dev]<a href="">add_movie_to_db</a> ajax
+    <form action="/watchlist/1/add-movie/{{movie.id}}" method="POST">
+        <button>add to DB</button>
+    </form>
 </p>
 {% endfor %}
 
-<h1>{{total2}} Reverse Search Results</h1>
-{% for movie in movies2 %}
-<p><a href="https://www.netflix.com/watch/{{movie.nfid}}"><img src="{{movie.img}}"
-            alt="{{movie.title}}"><br>{{movie.title}}</a><br>{{movie.synopsis}}</p>
-{% endfor %}
+
+
 {% endblock %}

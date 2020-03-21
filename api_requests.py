@@ -4,6 +4,27 @@ from html import unescape
 from file_to_dict import get_movies_dict, serialize_movies
 from models import db, Movie
 
+def single_movie_to_db(mov):
+    new_movie = Movie(
+                video_type = mov['vtype'],
+                netflix_id = mov['nfid'],
+                title = mov['title'],
+                image_url = mov['img'],
+                synopsis = mov['synopsis'],
+                year = mov['year'],
+                imdb_id = None if mov['imdbid'] == 'notfound' else mov['imdbid'],
+                unogs_id = mov['id'],
+            )
+    try:
+        db.session.add(new_movie)
+        db.session.commit()
+        print('movie saved to db.')
+    except:
+        #print('movie not added to dbsession')
+        db.session.rollback()
+        pass
+
+
 # pass in list of movie dicts
 # add to movies table 
 def save_to_db(movies):
