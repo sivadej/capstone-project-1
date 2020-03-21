@@ -57,7 +57,7 @@ def save_to_db(movies):
 def get_data(lang1, lang2):
     end_year = 2020
     start_year = 1950
-    limit = 25
+    limit = 100
     offset = 0
     videotype = None #movie or series
     audio = lang1

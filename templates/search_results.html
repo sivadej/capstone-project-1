@@ -1,19 +1,26 @@
 {% extends '_base.html' %}
-{% block title %}Search{% endblock %}
+{% block title %}Search Results{% endblock %}
 {% block body %}
 
 <h1>{{total}} Search Results. Showing {{movies|count}}</h1>
-{% for movie in movies %}
-<p>
-    <img src="{{movie.img}}" alt="{{movie.title}}"><br>{{movie.title}}<br>{{movie.synopsis}}<br>
-    <a href="https://www.netflix.com/watch/{{movie.nfid}}">[ Watch on Netflix ]</a><br>
-    [ Add to Watchlist ] UNOGS: {{movie.id}} [dev]<a href="">add_movie_to_db</a> ajax
-    <form action="/watchlist/1/add-movie/{{movie.id}}" method="POST">
-        <button>add to DB</button>
-    </form>
-</p>
-{% endfor %}
 
 
+<div class="card-columns">
+    {% for movie in movies %}
+    <div class="card">
+        <img class="card-img-top zoom" src="{{movie.img}}" alt="{{movie.title}}">
+        <div class="card-body">
+            <h4 class="card-title">{{movie.title}}</h4>
+            <p class="card-text">{{movie.synopsis}}</p>
+            <p class="card-text text-center"><a href="#" class="btn btn-danger">Watch on Netflix</a> <a href="#"
+                    class="btn btn-secondary">Add to Watchlist</a></p>
+        </div>
+        {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
+        <div class="card-footer text-center"><a href="https://www.imdb.com/title/{{movie.imdbid}}">More Info on IMDB</a>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
 
 {% endblock %}

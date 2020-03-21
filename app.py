@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, flash, session, g
+from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 #from forms import FormClassNamesHere
@@ -18,10 +18,6 @@ app.config['SQLALCHEMY_ECHO'] = True
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
-
-@app.before_request
-def before_request():
-    g.data = []
 
 @app.route('/')
 def show_home():
