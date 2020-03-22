@@ -25,23 +25,18 @@ class Watchlist(db.Model):
     is_shared = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    movies = db.relationship('Movie', secondary='watchlists_movies', backref=db.backref('watchlists', lazy=True))
+    movies = db.relationship('SavedMovie', secondary='watchlists_movies')
 
-class Movie(db.Model):
-    __tablename__ = 'movies'
+class SavedMovie(db.Model):
+    __tablename__ = 'saved_movies'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     netflix_id = db.Column(db.Integer, unique=True)
     title = db.Column(db.String(50), nullable=False)
-    image_url = db.Column(db.String)
-    synopsis = db.Column(db.Text)
-    year = db.Column(db.Integer)
-    imdb_id = db.Column(db.String(20))
-    unogs_id = db.Column(db.Integer, unique=True, nullable=False)
     video_type = db.Column(db.String(8), nullable=False)
 
 class Watchlist_Movie(db.Model):
     __tablename__ = 'watchlists_movies'
 
     watchlist_id = db.Column(db.Integer, db.ForeignKey('watchlists.id'), primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), primary_key=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey('saved_movies.id'), primary_key=True)

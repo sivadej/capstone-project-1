@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Watchlist, Movie, Watchlist_Movie
-from api_requests import get_data
+from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
+from api_requests import get_data, get_movie_detail
 from forms import MovieSearchForm
 from app_config import DB_URI, SECRET_KEY
 import json
@@ -10,9 +10,9 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 
 debug = DebugToolbarExtension(app)
 
@@ -78,15 +78,34 @@ def get_next_search_page(page_num):
 
 ################### WATCHLIST ROUTES ###################
 
-@app.route('/watchlist/<int:watchlist_id>/add-movie/<int:unogs_id>', methods=['POST'])
-def add_movie_to_watchlist(watchlist_id, unogs_id):
-    new_entry = Watchlist_Movie(watchlist_id=watchlist_id, movie_id=get_dbmovie_id(unogs_id))
+@app.route('/watchlist/<int:list_id>/add', methods=['POST'])
+def add_movie_to_watchlist(list_id):
+    netflix_id = request.form['netflix-id']
+    title = request.form['title']
+    video_type = request.form['video-type']
+
+    # check if movie exists in db. if not, add it and set dbmovie to new entry reference
+    dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == netflix_id).first()
+    if dbmovie is None:
+        new_movie = SavedMovie(netflix_id=netflix_id,title=title,video_type=video_type)
+        db.session.add(new_movie)
+        db.session.commit()
+        dbmovie = new_movie
+
+    # retrieve newly returned saved_movie.id and add entry to watchlist_movie.id
+    watchlist_entry = Watchlist_Movie(watchlist_id = list_id, movie_id = dbmovie.id)
+    
     try:
-        db.session.add(new_entry)
+        db.session.add(watchlist_entry)
         db.session.commit()
     except:
-        return('error')
-    return('added to watchlist!')
+        db.session.rollback()
+        return render_template('temp_watchlist_error.html')
+
+    #import pdb;pdb.set_trace()
+    return render_template('temp_watchlist_add_success.html')
+
+    # TODO: restrict this action to logged in userid
 
 @app.route('/watchlist/<int:id>')
 def show_watchlist_detail(id):
@@ -100,16 +119,20 @@ def user_logout():
     pass
 
 @app.route('/login')
-def user_logout():
+def user_login():
     pass
 
-################### HELPERS #######################
+################### MOVIE ROUTES #######################
 
 @app.route('/movie/<int:id>')
 def show_movie_details(id):
-    movie = Movie.query.get(id)
+    dbmovie = SavedMovie.query.get(id)
+    movie = get_movie_detail(dbmovie.netflix_id)
+
     return render_template('movie_details.html', movie=movie)
 
-def get_dbmovie_id(unogs_id):
-    dbmovie = Movie.query.filter(Movie.unogs_id == unogs_id).first_or_404()
+################### HELPERS #######################
+
+def get_dbmovie_id(netflix_id):
+    dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == netflix_id).first_or_404()
     return dbmovie.id

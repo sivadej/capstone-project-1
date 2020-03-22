@@ -4,7 +4,7 @@
 
 <h1>Search Results<a href="/search" class="btn btn-secondary float-right">New Search</a></h1>
 {% if movies is not none %}
-<p class="light-message">Showing {{result_start}}-{{result_end}} of {{total}} titles available in <span
+<p class="light-message">Showing {%if total>12%}{{result_start}}-{{result_end}} of {%endif%}{{total}} titles available in <span
     class="red-highlight">{{audio}}</span> audio with
   <span class="red-highlight">{{subs}}</span> subtitles:</p>
 <div class="row">
@@ -19,6 +19,14 @@
         <p class="card-text text-center"><a href="https://www.netflix.com/watch/{{movie.nfid}}"
             class="btn btn-sm btn-danger">Watch on Netflix</a><button type="button" class="btn btn-sm btn-secondary"
             data-toggle="modal" data-target="#watchlist-modal">Add to List</button></p>
+            
+            <form action="/watchlist/1/add" method="POST">
+              <input type="hidden" name="netflix-id" value={{movie.nfid}}>
+              <input type="hidden" name="title" value='{{movie.title}}'>
+              <input type="hidden" name="video-type" value={{movie.vtype}}>
+              <button>TT</button>
+            </form>
+
       </div>
       {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
       <div class="card-footer text-center"><a href="https://www.imdb.com/title/{{movie.imdbid}}">More Info on IMDB</a>

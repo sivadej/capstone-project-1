@@ -2,11 +2,11 @@
 {% block title %}{{watchlist.title}}{% endblock %}
 {% block body %}
 <h1>{{watchlist.title}}</h1>
-<h3>{{watchlist.description}}</h3>
+{% if watchlist.description %}<p class="light-message">Description: {{watchlist.description}}</p>{% endif %}
 
-<ul>
+<ul class="list-group">
     {%for movie in watchlist.movies%}
-    <li><a href="/movie/{{movie.id}}">{{movie.title}}</a></li>
+    <li><a class="list-group-item" href="/movie/{{movie.id}}">{{movie.title}}</a></li>
     {%endfor%}
 </ul>
 {% endblock %}

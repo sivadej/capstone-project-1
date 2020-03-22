@@ -1,25 +1,21 @@
 from app_config import API_KEY, API_HOST
 import requests
+import json
 from html import unescape
-from models import db, Movie
+from models import db, SavedMovie
 
-def save_to_db(movies):
-    for mov in movies:
-        new_movie = Movie(
-            video_type = mov['vtype'],
-            netflix_id = mov['nfid'],
-            title = mov['title'],
-            image_url = mov['img'],
-            synopsis = mov['synopsis'],
-            year = mov['year'],
-            imdb_id = None if mov['imdbid'] == 'notfound' else mov['imdbid'],
-            unogs_id = mov['id'],
-        )
-        try:
-            db.session.add(new_movie)
-            db.session.commit()
-        except:
-            db.session.rollback()
+#TODO FIX THIS FOR SAVEDMOVIE
+def save_to_db(mov):
+    new_movie = SavedMovie(
+        video_type = mov['vtype'],
+        netflix_id = mov['nfid'],
+        title = mov['title'],
+    )
+    try:
+        db.session.add(new_movie)
+        db.session.commit()
+    except:
+        db.session.rollback()
 
 def get_data(audio, subs, start_year=1900, end_year=2020, offset=0, filter_movie=True, filter_series=True):
     end_year = end_year
@@ -53,5 +49,27 @@ def get_data(audio, subs, start_year=1900, end_year=2020, offset=0, filter_movie
     
     return(unescape(response.text))
 
-def get_data_next_page():
-    pass
+def get_movie_detail(netflix_id):
+    url = f'https://unogsng.p.rapidapi.com/title?netflixid={netflix_id}'
+    headers = {
+        'x-rapidapi-host': API_HOST,
+        'x-rapidapi-key': API_KEY,
+        }
+
+    try:
+        response = requests.request("GET", url, headers=headers)
+    except:
+        return('api connection err')
+    
+    response = json.loads(unescape(response.text))
+    response = response['results'][0]
+
+    movie_detail = {
+        'title' : response['title'],
+        'image_url' : response['img'],
+        'synopsis' : response['synopsis'],
+        'video_type' : response['vtype'],
+        'netflix_id' : netflix_id,
+    }
+    
+    return movie_detail
