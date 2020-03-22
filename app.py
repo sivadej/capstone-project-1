@@ -3,14 +3,15 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 #from forms import FormClassNamesHere
 from models import db, connect_db, User, Watchlist, Movie, Watchlist_Movie
-from api_requests import get_data, save_to_db, single_movie_to_db
+from api_requests import get_data, save_to_db
 from file_to_dict import get_movies_dict, serialize_movies
 from forms import MovieSearchForm
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/what2watch'
-app.config['SECRET_KEY'] = 'verysecretindeed'
+from app_config import DB_URI, SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+app.config['SECRET_KEY'] = SECRET_KEY
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
@@ -21,19 +22,21 @@ connect_db(app)
 
 @app.route('/')
 def show_home():
-    return ('hello')
+    return redirect('/search')
 
 @app.route('/search', methods=['GET', 'POST'])
 def show_search():
     form = MovieSearchForm()
     if form.validate_on_submit():
-        response = get_data(lang1=form.lang1.data, lang2=form.lang2.data)
-        #response2 = get_data(lang1=form.lang2.data, lang2=form.lang1.data)
-        data = serialize_movies(response)
-        movies = data['results']
-        save_to_db(movies)
-        #data2 = serialize_movies(response2)
-        return render_template('search_results.html', movies=movies, total=data['total'])
+        response = get_data(audio=form.audio.data, subs=form.subs.data)  
+        try:
+            data = serialize_movies(response)
+            movies = data['results']
+            total = data['total']
+        except:
+            movies = None
+        #save_to_db(movies)
+        return render_template('search_results.html', movies=movies, total=total, audio=form.audio.data, subs=form.subs.data)
     else:
         return render_template('search_form.html', form=form)
 
@@ -49,11 +52,13 @@ def get_search_result():
 @app.route('/search-sample', methods=['POST'])
 def show_sample_data():
     data = get_movies_dict()
-    movies = data['results']
-    total = data['total']
+    try:
+        movies = data['results']
+    except:
+        movies = {'msg':'error'}
     #import pdb;pdb.set_trace()
     #save_to_db(movies)
-    return render_template('search_results.html', movies=movies, total=total)
+    return render_template('search_results.html', movies=movies, total=69420, audio='Thai', subs='English')
 
 # route handles unogs id, handles dbmovie, redirect to movie detail by dbmovie id
 

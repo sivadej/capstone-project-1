@@ -1,7 +1,29 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField
-from wtforms.validators import InputRequired, Length, Email
+from wtforms import StringField, PasswordField, SelectField, IntegerField, BooleanField
+from wtforms.validators import InputRequired, Length, Email, NumberRange
+
+language_list = ['English','Spanish','Cantonese','Brazilian','Tagalog','French','German','Mandarin','Arabic','Korean','Slovak','Thai','Chinese','Turkish','Vietnamese']
+#language_list = language_list.sort()
+def get_tuples(langs):
+    list_of_lang_tuples=[]
+    for lang in langs:
+        list_of_lang_tuples.append((lang,lang))
+    return list_of_lang_tuples
+lang_tuples = get_tuples(language_list)
 
 class MovieSearchForm(FlaskForm):
-    lang1 = StringField('Language 1', validators=[InputRequired()])
-    lang2 = StringField('Language 2', validators=[InputRequired()])
+    audio = SelectField('Audio', choices=lang_tuples)
+    subs = SelectField('Subtitles', choices=lang_tuples)
+    #year = IntegerField('Year Range', validators=[NumberRange(min=1900, max=2020)])
+
+class NewWatchlistForm(FlaskForm):
+    title = StringField()
+    description = StringField()
+    is_public = BooleanField()
+
+
+
+
+
+
+
