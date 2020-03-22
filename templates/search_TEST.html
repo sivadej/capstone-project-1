@@ -1,13 +1,8 @@
 {% extends '_base.html' %}
-{% block title %}Search Results{% endblock %}
+{% block title %}jsdkfjklsdfkls{% endblock %}
 {% block body %}
 
-<h1>Search Results<a href="/search" class="btn btn-secondary float-right">New Search</a></h1>
-{% if movies is not none %}
-<p class="light-message">Showing {{result_start}}-{{result_end}} of {{total}} titles available in <span
-    class="red-highlight">{{audio}}</span> audio with
-  <span class="red-highlight">{{subs}}</span> subtitles:</p>
-<div class="row">
+<div class="row"></div>
   {% for movie in movies %}
   <div class="col-sm-6 col-md-4 col-lg-3">
     <div class="card mb-4">
@@ -29,13 +24,6 @@
   {% endfor %}
 
 </div>
-{% if total > 12 %}
-<div class="mb-4"><form action="/search/results/{{next_page}}" method="GET"><button class="btn btn-warning btn-block">Next Page</button></form></div>
-{% endif %}
-{% else %}
-<p class="light-message">No results.</p>
-<a href="/search" class="btn btn-danger">New Search</a>
-{% endif %}
 
 
 <!-- The Modal -->
