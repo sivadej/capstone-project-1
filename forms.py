@@ -25,13 +25,13 @@ class MovieSearchForm(FlaskForm):
         pass
 
 class NewWatchlistForm(FlaskForm):
-    title = StringField()
-    description = StringField()
-    is_public = BooleanField()
+    title = StringField('Watchlist Title', validators=[InputRequired()])
+    description = StringField('Description', validators=[InputRequired()])
+    is_shared = BooleanField('Make Public')
 
 class LoginForm(FlaskForm):
-    username = StringField('User Name')
-    password = PasswordField('Password')
+    username = StringField('User Name', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
     remember = BooleanField('Remember Me')
 
 class RegisterForm(FlaskForm):

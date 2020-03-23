@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
-from forms import MovieSearchForm, LoginForm, RegisterForm
+from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm
 from app_config import DB_URI, SECRET_KEY
 from sqlalchemy.exc import IntegrityError
 import json
@@ -164,7 +164,7 @@ def add_movie_to_watchlist(list_id):
         dbmovie = new_movie
 
     # retrieve newly returned saved_movie.id and add entry to watchlist_movie.id
-    watchlist_entry = Watchlist_Movie(watchlist_id = list_id, movie_id = dbmovie.id)
+    watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=dbmovie.id)
     
     try:
         db.session.add(watchlist_entry)
@@ -182,6 +182,30 @@ def add_movie_to_watchlist(list_id):
 def show_watchlist_detail(id):
     watchlist = Watchlist.query.get_or_404(id)
     return render_template('watchlist_detail.html', watchlist=watchlist)
+
+@app.route('/watchlist/new', methods=['GET','POST'])
+@login_required
+def new_watchlist():
+    form = NewWatchlistForm()
+    if form.validate_on_submit():
+        watchlist = Watchlist(
+            title = form.title.data,
+            description = form.description.data,
+            is_shared = form.is_shared.data,
+            user_id = current_user.id
+        )
+        db.session.add(watchlist)
+        db.session.commit()
+        return redirect(f'/watchlist/{watchlist.id}')
+    else:
+        return render_template('watchlist_new.html', form=form)
+
+@app.route('/watchlists')
+def shared_watchlists():
+    watchlists = Watchlist.query.filter_by(is_shared=True).all()
+    return render_template('watchlists.html', watchlists=watchlists)
+        
+
 
 ################### MOVIE ROUTES #######################
 
