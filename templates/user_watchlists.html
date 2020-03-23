@@ -1,0 +1,10 @@
+{% extends '_base.html' %}
+{% block title %}Shared Watchlists{% endblock %}
+{% block body %}
+<ul class="list-group">
+    {%for watchlist in watchlists %}
+    <li class="list-group-item"><a href="/watchlist/{{watchlist.id}}">{{watchlist.title}}</a> - Public:
+        {{watchlist.is_shared}} - EDIT - DELETE</li>
+    {%endfor%}
+</ul>
+{% endblock %}

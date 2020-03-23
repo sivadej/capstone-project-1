@@ -48,7 +48,7 @@ def login():
             password = form.password.data,
         )
         login_user(user, remember=form.remember.data)
-        return redirect('/profile')
+        return redirect('/')
     return render_template('login.html', form=form)
 
 @app.route('/register', methods=['GET','POST'])
@@ -66,7 +66,7 @@ def register():
             flash('username taken')
             return render_template('register.html', form=form)
         login_user(user)
-        return redirect('/profile')
+        return redirect('/')
     else:
         return render_template('register.html', form=form)
 
@@ -76,7 +76,8 @@ def register():
 
 
 @app.route('/profile', methods=['GET'])
-def profilestest():
+@login_required
+def user_profile():
     return render_template('profile.html')
 
 @app.route('/secret')
@@ -204,7 +205,15 @@ def new_watchlist():
 def shared_watchlists():
     watchlists = Watchlist.query.filter_by(is_shared=True).all()
     return render_template('watchlists.html', watchlists=watchlists)
-        
+
+@app.route('/user/<int:user_id>/watchlists')
+@login_required
+def user_watchlists(user_id):
+    if current_user.id == user_id:
+        watchlists = Watchlist.query.filter_by(user_id=user_id).all()
+        return render_template('user_watchlists.html', watchlists=watchlists)
+    else:
+        return('not authorized to view this user watchlists')
 
 
 ################### MOVIE ROUTES #######################

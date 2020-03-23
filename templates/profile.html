@@ -1,3 +1,15 @@
-hello {% if current_user.is_authenticated %} {{current_user.username}} {{current_user.id}}
-{{current_user.is_authenticated}} {{current_user.is_anonymous}} {{current_user.get_id()}} {%else%}
-{{current_user.is_anonymous}} stranger {%endif%}
+{% extends '_base.html' %}
+{% block title %}{{current_user.username}}'s Profile{% endblock %}
+{% block body %}
+
+<p class="light-message">
+    Hello, {{current_user.username}}! IN THE DATABASE YOU ARE USER ID # {{current_user.id}}
+</p>
+<ul class="list-group">
+    <li><a class="list-group-item" href="/search">search</a></li>
+    <li><a class="list-group-item" href="/watchlists">public watchlists</a></li>
+    <li></li>
+    <li><a class="list-group-item" href="/logout">logout</a></li>
+    <li><a class="list-group-item" href="/user/{{current_user.id}}/watchlists">my watchlists</a></li>
+</ul>
+{% endblock %}
