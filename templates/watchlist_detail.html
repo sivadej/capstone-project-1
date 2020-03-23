@@ -1,0 +1,13 @@
+{% extends '_base.html' %}
+{% block title %}{{watchlist.title}}{% endblock %}
+{% block body %}
+<h1>{{watchlist.title}}</h1>
+{% if watchlist.description %}<p class="light-message">Description: {{watchlist.description}}</p>{% endif %}
+<p class="light-message">Created by: {{watchlist.user.username}}</p>
+
+<ul class="list-group">
+    {%for movie in watchlist.movies%}
+    <li><a class="list-group-item" href="/movie/{{movie.id}}">{{movie.title}}</a></li>
+    {%endfor%}
+</ul>
+{% endblock %}

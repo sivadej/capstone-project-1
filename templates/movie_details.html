@@ -1,0 +1,18 @@
+{% extends '_base.html' %}
+{% block title %}{{movie.title}} - What2Watch{% endblock %}
+{% block body %}
+<div class="row">
+  <div class="col-sm-6 col-md-4 col-lg-3">
+    <div class="card mb-4">
+      <img class="card-img-top zoom" src="{{movie.image_url}}" alt="{{movie.title}}">
+      <div class="card-body">
+        <p class="video-type">{{movie.video_type}}</p>
+        <h4 class="card-title pt-0">{{movie.title}}</h4>
+        <p class="card-text">{{movie.synopsis}}</p>
+        <p class="card-text text-center"><a href="https://www.netflix.com/watch/{{movie.netflix_id}}"
+        class="btn btn-sm btn-danger">Watch on Netflix</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
