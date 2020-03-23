@@ -28,3 +28,13 @@ class NewWatchlistForm(FlaskForm):
     title = StringField()
     description = StringField()
     is_public = BooleanField()
+
+class LoginForm(FlaskForm):
+    username = StringField('User Name')
+    password = PasswordField('Password')
+    remember = BooleanField('Remember Me')
+
+class RegisterForm(FlaskForm):
+    username = StringField('User Name', validators=[InputRequired()])
+    email = StringField('Email', validators=[InputRequired(), Email()])
+    password = PasswordField('Password', validators=[InputRequired()])

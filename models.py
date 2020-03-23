@@ -1,20 +1,44 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from flask_bcrypt import Bcrypt
 
+bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 def connect_db(app):
     db.app = app
     db.init_app(app)
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(20), nullable=False)
+    username = db.Column(db.String(20), nullable=False, unique=True)
     email = db.Column(db.String(50), nullable=False)
-    password = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String, nullable=False)
 
     watchlists = db.relationship('Watchlist', backref='user')
+
+    @classmethod
+    def register(cls, username, email, password):
+        hashed_pass = bcrypt.generate_password_hash(password).decode('UTF-8')
+        user = User(
+            username = username,
+            email = email,
+            password = hashed_pass,
+            )
+        db.session.add(user)
+        return user
+    
+    @classmethod
+    def authenticate(cls, username, password):
+        user = cls.query.filter_by(username=username).first()
+        if user:
+            is_auth = bcrypt.check_password_hash(user.password, password)
+            if is_auth:
+                return user
+        
+        return False
 
 class Watchlist(db.Model):
     __tablename__ = 'watchlists'

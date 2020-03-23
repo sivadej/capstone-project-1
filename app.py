@@ -2,15 +2,17 @@ from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
-from forms import MovieSearchForm
+from forms import MovieSearchForm, LoginForm, RegisterForm
 from app_config import DB_URI, SECRET_KEY
+from sqlalchemy.exc import IntegrityError
 import json
+from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
@@ -18,9 +20,78 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
+################### USER AUTH ###################
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
 @app.route('/')
 def show_home():
-    return redirect('/search')
+    print(current_user)
+    return render_template('hello.html')
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/')
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.authenticate(
+            username = form.username.data,
+            password = form.password.data,
+        )
+        login_user(user, remember=form.remember.data)
+        return redirect('/profile')
+    return render_template('login.html', form=form)
+
+@app.route('/register', methods=['GET','POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        try:
+            user = User.register(
+                username = form.username.data,
+                email = form.email.data,
+                password = form.password.data,
+            )
+            db.session.commit()
+        except IntegrityError:
+            flash('username taken')
+            return render_template('register.html', form=form)
+        login_user(user)
+        return redirect('/profile')
+    else:
+        return render_template('register.html', form=form)
+
+
+
+
+
+
+@app.route('/profile', methods=['GET'])
+def profilestest():
+    return render_template('profile.html')
+
+@app.route('/secret')
+@login_required
+def secret_page():
+    return 'this is a secret page'
+
+@app.route('/secret1')
+@login_required
+def secret_page1():
+    if current_user.id == 1:
+        return 'you made it to secret page for user 1 ONLY'
+    else:
+        return 'secret, but not for you dummy'
+
 
 ################### SEARCH ROUTES ###################
 
@@ -111,16 +182,6 @@ def add_movie_to_watchlist(list_id):
 def show_watchlist_detail(id):
     watchlist = Watchlist.query.get_or_404(id)
     return render_template('watchlist_detail.html', watchlist=watchlist)
-
-################### USER ROUTES #######################
-
-@app.route('/logout')
-def user_logout():
-    pass
-
-@app.route('/login')
-def user_login():
-    pass
 
 ################### MOVIE ROUTES #######################
 
