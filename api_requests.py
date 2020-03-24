@@ -4,6 +4,10 @@ import json
 from html import unescape
 from models import db, SavedMovie
 
+# cache api requests for 24 hours
+import requests_cache
+requests_cache.install_cache(cache_name='unogs_cache', backend='memory', expire_after=86400)
+
 #TODO FIX THIS FOR SAVEDMOVIE
 def save_to_db(mov):
     new_movie = SavedMovie(

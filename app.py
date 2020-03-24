@@ -97,6 +97,7 @@ def show_search():
         except:
             movies = None
         return redirect('/search/results/1')
+
     else:
         if 'total' in session:
             session.pop('total')
@@ -124,6 +125,7 @@ def get_next_search_page(page_num):
         total=session['total'],
         audio=session['audio'],
         subs=session['subs'],
+        page=page_num,
         next_page=(page_num+1),
         result_start=(((page_num-1)*12)+1),
         result_end=(page_num*12),
@@ -158,14 +160,11 @@ def add_movie_to_watchlist(list_id):
         db.session.commit()
         dbmovie = new_movie
     
-    
     # clean up session
     session.pop('netflix_id', None)
     session.pop('title', None)
     session.pop('video_type', None)
     
-    
-
     # retrieve newly returned saved_movie.id and add entry to watchlist_movie.id
     watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=dbmovie.id)
     
@@ -175,19 +174,20 @@ def add_movie_to_watchlist(list_id):
     except:
         db.session.rollback()
         return render_template('temp_watchlist_error.html')
-
-    return render_template('temp_watchlist_add_success.html')
+    return_page = session['return_page']
+    return redirect(f'/search/results/{return_page}')
 ######
 @app.route('/test_picklist/get_watchlist_for_movie', methods=['GET','POST'])
 @login_required
 def pick_watchlist():
-
     form = PickWatchlistForMovieForm()
     choices = db.session.query(Watchlist.id, Watchlist.title).filter_by(user_id=current_user.id).all()
     form.watchlist.choices = choices
 
     # POST: return selected watchlist_id
     if form.validate_on_submit():
+        
+        #return_page = session['return_page']
         return redirect(f'/watchlist/{form.watchlist.data}/insert_movie')
 
     # GET:
@@ -195,6 +195,7 @@ def pick_watchlist():
     session['netflix_id'] = request.form['netflix-id']
     session['title'] = request.form['title']
     session['video_type'] = request.form['video-type']
+    session['return_page'] = request.form['return-page']
     return render_template('pick_watchlist.html', form=form)
 
 
