@@ -27,6 +27,14 @@
           <button>TT</button>
         </form>
         {% endif %}
+        {% if current_user.is_authenticated %}
+        <form action="/test_picklist/get_watchlist_for_movie" method="POST">
+          <input type="hidden" name="netflix-id" value={{movie.nfid}}>
+          <input type="hidden" name="title" value='{{movie.title}}'>
+          <input type="hidden" name="video-type" value={{movie.vtype}}>
+          <button class="btn btn-success">V2</button>
+        </form>
+        {% endif %}
 
       </div>
       {% if (movie.imdbid != "notfound") and (movie.imdbid) %}

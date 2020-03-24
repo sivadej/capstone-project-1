@@ -48,3 +48,6 @@ class EditWatchlistForm(FlaskForm):
     title = StringField('Watchlist Title', validators=[InputRequired()])
     description = StringField('Description', validators=[InputRequired()])
     is_shared = BooleanField('Make Public')
+
+class PickWatchlistForMovieForm(FlaskForm):
+    watchlist = SelectField('Watchlist', coerce=int)

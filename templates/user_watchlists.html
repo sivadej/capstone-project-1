@@ -2,6 +2,7 @@
 {% block title %}My Watchlists{% endblock %}
 {% block body %}
 <h1>My Watchlists</h1>
+<a class="btn btn-secondary" href="/watchlist/new">New Watchlist</a>
 <ul class="list-group">
     {%for watchlist in watchlists %}
     <li class="list-group-item"><a href="/watchlist/{{watchlist.id}}">{{watchlist.title}}</a> - Public:
