@@ -56,7 +56,7 @@ class SavedMovie(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     netflix_id = db.Column(db.Integer, unique=True)
-    title = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
     video_type = db.Column(db.String(8), nullable=False)
 
 class Watchlist_Movie(db.Model):

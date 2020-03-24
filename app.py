@@ -70,29 +70,10 @@ def register():
     else:
         return render_template('register.html', form=form)
 
-
-
-
-
-
 @app.route('/profile', methods=['GET'])
 @login_required
 def user_profile():
     return render_template('profile.html')
-
-@app.route('/secret')
-@login_required
-def secret_page():
-    return 'this is a secret page'
-
-@app.route('/secret1')
-@login_required
-def secret_page1():
-    if current_user.id == 1:
-        return 'you made it to secret page for user 1 ONLY'
-    else:
-        return 'secret, but not for you dummy'
-
 
 ################### SEARCH ROUTES ###################
 
@@ -149,8 +130,6 @@ def get_next_search_page(page_num):
         )
 
 ################### WATCHLIST ROUTES ###################
-
-
 
 # TODO: separate this function:
 #           - add movie to saved_movies table

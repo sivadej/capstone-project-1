@@ -11,6 +11,14 @@
 </head>
 
 <body>
+    <div class="alert alert-secondary">
+        <p><a href="/">home</a> <a href="/search">search</a> <a href="/login">login</a> <a href="/logout">logout</a>
+            <a href="/register">register</a> <a href="/profile">profile</a> <a href="/watchlists">watchlists</a><br>
+            {% if current_user.is_anonymous %}not logged in{% endif %}
+            {% if current_user.is_authenticated %}logged in as {{current_user.username}}
+            (user id {{current_user.id}}){% endif %}
+        </p>
+    </div>
     <div class="container mt-3">
         {% block body %}
         {% endblock %}

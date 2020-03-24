@@ -2,7 +2,7 @@
 {% block title %}Search Results{% endblock %}
 {% block body %}
 
-<h1>Search Results<a href="/search" class="btn btn-secondary float-right">New Search</a></h1>
+<h1>Search Results<a href="/search" class="btn btn-secondary float-right">Modify Search</a></h1>
 {% if movies is not none %}
 <p class="light-message">Showing {%if total>12%}{{result_start}}-{{result_end}} of {%endif%}{{total}} titles available
   in <span class="red-highlight">{{audio}}</span> audio with
