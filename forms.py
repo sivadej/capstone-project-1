@@ -38,3 +38,13 @@ class RegisterForm(FlaskForm):
     username = StringField('User Name', validators=[InputRequired()])
     email = StringField('Email', validators=[InputRequired(), Email()])
     password = PasswordField('Password', validators=[InputRequired()])
+
+class EditUserForm(FlaskForm):
+    username = StringField('User Name', validators=[InputRequired()])
+    email = StringField('Email', validators=[InputRequired(), Email()])
+    #password = PasswordField('Password', validators=[InputRequired()])
+
+class EditWatchlistForm(FlaskForm):
+    title = StringField('Watchlist Title', validators=[InputRequired()])
+    description = StringField('Description', validators=[InputRequired()])
+    is_shared = BooleanField('Make Public')

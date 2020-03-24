@@ -1,5 +1,5 @@
 {% extends '_base.html' %}
-{% block title %}TITLE HERE{% endblock %}
+{% block title %}hello!{% endblock %}
 {% block body %}
 
 <p class="light-message">
@@ -7,12 +7,12 @@
     {% if current_user.is_authenticated %}Hello, {{current_user.username}}!{% endif %}
 </p>
 <ul class="list-group">
-    <li><a class="list-group-item" href="/search">search</a></li>
+    <li><a class="list-group-item active" href="/search">search for movies</a></li>
+    <li><a class="list-group-item" href="/watchlists">everyone's shared watchlists</a></li>
     <li></li>
     <li><a class="list-group-item" href="/logout">logout</a></li>
     <li><a class="list-group-item" href="/login">login</a></li>
     <li><a class="list-group-item" href="/register">register</a></li>
     <li><a class="list-group-item" href="/profile">profile</a></li>
-    <li><a class="list-group-item" href="/watchlists">watchlists</a></li>
 </ul>
 {% endblock %}

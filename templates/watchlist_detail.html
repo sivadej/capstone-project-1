@@ -3,11 +3,24 @@
 {% block body %}
 <h1>{{watchlist.title}}</h1>
 {% if watchlist.description %}<p class="light-message">Description: {{watchlist.description}}</p>{% endif %}
-<p class="light-message">Created by: {{watchlist.user.username}}</p>
+<p class="light-message">Created by: {{watchlist.user.username}}<br>Is this your list? {{is_owner}}</p>
 
 <ul class="list-group">
     {%for movie in watchlist.movies%}
-    <li><a class="list-group-item" href="/movie/{{movie.id}}">{{movie.title}}</a></li>
+    <li class="list-group-item">
+        <a href="/movie/{{movie.id}}">{{movie.title}}</a>
+        {% if is_owner %}
+        <form method="POST" action="/watchlist/{{watchlist.id}}/remove_movie/{{movie.id}}">
+            <button class="badge badge-xs btn-danger float-right">
+                del
+            </button>
+        </form>
+        {%endif%}
+    </li>
     {%endfor%}
 </ul>
+
+{% if is_owner %}
+<p class="light-message"><a href="/watchlist/{{watchlist.id}}/edit">Edit watchlist description</a></p>
+{% endif %}
 {% endblock %}

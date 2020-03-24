@@ -1,5 +1,14 @@
 {% extends '_base.html' %}
-{% block title %}TITLE HERE{% endblock %}
+{% block title %}Edit Watchlist{% endblock %}
 {% block body %}
-
+<h1>Edit Watchlist</h1>
+<form method="POST">
+    {{form.hidden_tag()}}
+    {% for field in form if field.widget.input_type != 'hidden' %}
+    <p class="light-message">
+        {{field.label}} {{field}} {% for error in field.errors %} {{error}} {%endfor%}
+    </p>
+    {% endfor %}
+    <button>Submit</button>
+</form>
 {% endblock %}

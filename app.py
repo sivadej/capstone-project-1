@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
-from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm
+from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm
 from app_config import DB_URI, SECRET_KEY
 from sqlalchemy.exc import IntegrityError
 import json
@@ -150,8 +150,38 @@ def get_next_search_page(page_num):
 
 ################### WATCHLIST ROUTES ###################
 
-@app.route('/watchlist/<int:list_id>/add', methods=['POST'])
+@app.route('/watchlist/<int:list_id>/remove_movie/<int:movie_id>', methods=['POST'])
+def remove_movie_from_watchlist(list_id, movie_id):
+
+    # restrict action to logged in user
+    if current_user.is_anonymous:
+        return('only logged in users can perform this action')
+    
+    # authorize current user is owner of current watchlist
+    curr_list = Watchlist.query.get(list_id)
+    if curr_list.user_id != current_user.id:
+        return('you are not authorized to edit this watchlist')
+    
+    
+    
+    watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
+    db.session.delete(watchlist_entry)
+    db.session.commit()
+    return redirect(f'/watchlist/{list_id}')
+    
+
+@app.route('/watchlist/<int:list_id>/insert_movie', methods=['POST'])
 def add_movie_to_watchlist(list_id):
+
+    # restrict action to logged in user
+    if current_user.is_anonymous:
+        return('only logged in users can perform this action')
+    
+    # authorize current user is owner of current watchlist
+    curr_list = Watchlist.query.get(list_id)
+    if curr_list.user_id != current_user.id:
+        return('you are not authorized to edit this watchlist')
+    
     netflix_id = request.form['netflix-id']
     title = request.form['title']
     video_type = request.form['video-type']
@@ -177,12 +207,19 @@ def add_movie_to_watchlist(list_id):
     #import pdb;pdb.set_trace()
     return render_template('temp_watchlist_add_success.html')
 
-    # TODO: restrict this action to logged in userid
 
-@app.route('/watchlist/<int:id>')
-def show_watchlist_detail(id):
-    watchlist = Watchlist.query.get_or_404(id)
-    return render_template('watchlist_detail.html', watchlist=watchlist)
+@app.route('/watchlist/<int:list_id>')
+def show_watchlist_detail(list_id):
+    #TODO: list editing options should be displayed for authorized users
+    # handle auth (check if list owned by current user) and pass boolean into template
+    watchlist = Watchlist.query.get_or_404(list_id)
+
+    if current_user.is_authenticated:
+        is_owner = True if watchlist.user_id == current_user.id else False
+    else:
+        is_owner=False
+
+    return render_template('watchlist_detail.html', watchlist=watchlist, is_owner=is_owner)
 
 @app.route('/watchlist/new', methods=['GET','POST'])
 @login_required
@@ -201,6 +238,28 @@ def new_watchlist():
     else:
         return render_template('watchlist_new.html', form=form)
 
+@app.route('/watchlist/<int:list_id>/delete', methods=['POST'])
+@login_required
+def delete_watchlist(list_id):
+    watchlist = Watchlist.query.get_or_404(list_id)
+    db.session.delete(watchlist)
+    db.session.commit()
+    return redirect(f'/user/{current_user.id}/watchlists')
+
+@app.route('/watchlist/<int:list_id>/edit', methods=['GET','POST'])
+@login_required
+def edit_watchlist(list_id):
+    watchlist = Watchlist.query.get_or_404(list_id)
+    form = EditWatchlistForm(obj=watchlist)
+    if form.validate_on_submit():
+        watchlist.title = form.title.data
+        watchlist.description = form.description.data
+        watchlist.is_shared = form.is_shared.data
+        db.session.commit()
+        return redirect(f'/user/{current_user.id}/watchlists')
+    return render_template('watchlist_edit.html', form=form)
+    
+
 @app.route('/watchlists')
 def shared_watchlists():
     watchlists = Watchlist.query.filter_by(is_shared=True).all()
@@ -215,18 +274,28 @@ def user_watchlists(user_id):
     else:
         return('not authorized to view this user watchlists')
 
+@app.route('/user/<int:user_id>/edit', methods=['GET','POST'])
+@login_required
+def edit_user(user_id):
+    if current_user.id == user_id:
+        form = EditUserForm(obj=current_user)
+        if form.validate_on_submit():
+            user = User.query.get(user_id)
+            user.username = form.username.data
+            user.email = form.email.data
+            db.session.commit()     
+            return redirect('/profile')
+
+        return render_template('user_edit.html', user=current_user, form=form)
+    else:
+        return('unauthorized')
 
 ################### MOVIE ROUTES #######################
 
 @app.route('/movie/<int:id>')
 def show_movie_details(id):
-    dbmovie = SavedMovie.query.get(id)
+    dbmovie = SavedMovie.query.get_or_404(id)
     movie = get_movie_detail(dbmovie.netflix_id)
-
     return render_template('movie_details.html', movie=movie)
 
 ################### HELPERS #######################
-
-def get_dbmovie_id(netflix_id):
-    dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == netflix_id).first_or_404()
-    return dbmovie.id
