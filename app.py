@@ -178,6 +178,14 @@ def add_movie_to_watchlist(list_id):
         db.session.add(new_movie)
         db.session.commit()
         dbmovie = new_movie
+    
+    
+    # clean up session
+    session.pop('netflix_id', None)
+    session.pop('title', None)
+    session.pop('video_type', None)
+    
+    
 
     # retrieve newly returned saved_movie.id and add entry to watchlist_movie.id
     watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=dbmovie.id)
@@ -196,8 +204,7 @@ def add_movie_to_watchlist(list_id):
 def pick_watchlist():
 
     form = PickWatchlistForMovieForm()
-    watchlists = Watchlist.query.filter_by(user_id=current_user.id).all()
-    choices = db.session.query(Watchlist.id, Watchlist.title).all()
+    choices = db.session.query(Watchlist.id, Watchlist.title).filter_by(user_id=current_user.id).all()
     form.watchlist.choices = choices
 
     # POST: return selected watchlist_id
@@ -206,13 +213,11 @@ def pick_watchlist():
 
     # GET:
     # return list of user-owned watchlists for dropdown display on template
-    if watchlists[0].user_id == current_user.id:
-        session['netflix_id'] = request.form['netflix-id']
-        session['title'] = request.form['title']
-        session['video_type'] = request.form['video-type']
-        return render_template('pick_watchlist.html', form=form)
-    else:
-        return('not authorized to view this user watchlists')
+    session['netflix_id'] = request.form['netflix-id']
+    session['title'] = request.form['title']
+    session['video_type'] = request.form['video-type']
+    return render_template('pick_watchlist.html', form=form)
+
 
 @app.route('/watchlist/<int:list_id>/remove_movie/<int:movie_id>', methods=['POST'])
 def remove_movie_from_watchlist(list_id, movie_id):

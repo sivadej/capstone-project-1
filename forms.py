@@ -26,7 +26,7 @@ class MovieSearchForm(FlaskForm):
 
 class NewWatchlistForm(FlaskForm):
     title = StringField('Watchlist Title', validators=[InputRequired()])
-    description = StringField('Description', validators=[InputRequired()])
+    description = StringField('Description')
     is_shared = BooleanField('Make Public')
 
 class LoginForm(FlaskForm):
@@ -46,7 +46,7 @@ class EditUserForm(FlaskForm):
 
 class EditWatchlistForm(FlaskForm):
     title = StringField('Watchlist Title', validators=[InputRequired()])
-    description = StringField('Description', validators=[InputRequired()])
+    description = StringField('Description')
     is_shared = BooleanField('Make Public')
 
 class PickWatchlistForMovieForm(FlaskForm):
