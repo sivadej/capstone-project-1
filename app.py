@@ -75,6 +75,23 @@ def register():
 def user_profile():
     return render_template('profile.html')
 
+@app.route('/user/<int:user_id>/edit', methods=['GET','POST'])
+@login_required
+def edit_user(user_id):
+    if current_user.id == user_id:
+        form = EditUserForm(obj=current_user)
+        if form.validate_on_submit():
+            user = User.query.get(user_id)
+            user.username = form.username.data
+            user.email = form.email.data
+            db.session.commit()     
+            return redirect('/profile')
+
+        return render_template('user_edit.html', user=current_user, form=form)
+    else:
+        return('unauthorized')
+
+
 ################### SEARCH ROUTES ###################
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -285,22 +302,6 @@ def user_watchlists(user_id):
         return render_template('user_watchlists.html', watchlists=watchlists)
     else:
         return('not authorized to view this user watchlists')
-
-@app.route('/user/<int:user_id>/edit', methods=['GET','POST'])
-@login_required
-def edit_user(user_id):
-    if current_user.id == user_id:
-        form = EditUserForm(obj=current_user)
-        if form.validate_on_submit():
-            user = User.query.get(user_id)
-            user.username = form.username.data
-            user.email = form.email.data
-            db.session.commit()     
-            return redirect('/profile')
-
-        return render_template('user_edit.html', user=current_user, form=form)
-    else:
-        return('unauthorized')
 
 ################### MOVIE ROUTES #######################
 
