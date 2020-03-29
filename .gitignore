@@ -3,8 +3,8 @@ app_config.py
 
 old_stuff/
 
-old_stuff/
-
 .vscode/
 venv/
 __pycache__/
+
+unogs_cache.sqlite
