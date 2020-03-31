@@ -90,7 +90,6 @@ def login():
             username = form.username.data,
             password = form.password.data,
         )
-        import pdb;pdb.set_trace()
         if user is False:
             flash('Invalid login details. Try Again.','danger')
             return redirect('/login')
@@ -153,7 +152,7 @@ def delete_user(user_id):
         flash('User account deleted.','warning')
         return redirect('/logout')
     else:
-        return('unauthorized')
+        return('',403)
 
 
 
@@ -222,13 +221,10 @@ def get_next_search_page(page_num):
 def add_movie_to_watchlist(list_id):
 
     # restrict action to logged in user
-    if current_user.is_anonymous:
-        return('only logged in users can perform this action')
-    
     # authorize current user is owner of current watchlist
     curr_list = Watchlist.query.get(list_id)
-    if curr_list.user_id != current_user.id:
-        return('you are not authorized to edit this watchlist')
+    if curr_list.user_id != current_user.id or current_user.is_anonymous:
+        return('',403)
     
     # check if movie exists in db. if not, add it and set dbmovie to new entry reference
     dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == session['netflix_id']).first()
@@ -289,13 +285,10 @@ def pick_watchlist():
 def remove_movie_from_watchlist(list_id, movie_id):
 
     # restrict action to logged in user
-    if current_user.is_anonymous:
-        return('only logged in users can perform this action')
-    
     # authorize current user is owner of current watchlist
     curr_list = Watchlist.query.get(list_id)
-    if curr_list.user_id != current_user.id:
-        return('you are not authorized to edit this watchlist')
+    if curr_list.user_id != current_user.id or current_user.is_anonymous:
+        return('',403)
 
     watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
     movie = SavedMovie.query.get(movie_id)
@@ -308,14 +301,11 @@ def remove_movie_from_watchlist(list_id, movie_id):
 @app.route('/watchlists/<int:list_id>')
 def show_watchlist_detail(list_id):
     # list editing options should be displayed for authorized users
-    # authorize (check if list owned by current user) and pass boolean into template
     watchlist = Watchlist.query.get_or_404(list_id)
-
     if current_user.is_authenticated:
         is_owner = True if watchlist.user_id == current_user.id else False
     else:
         is_owner = False
-
     return render_template('watchlists/watchlist_detail.html', watchlist=watchlist, is_owner=is_owner)
 
 @app.route('/watchlists/new', methods=['GET','POST'])
@@ -350,15 +340,18 @@ def delete_watchlist(list_id):
 @login_required
 def edit_watchlist(list_id):
     watchlist = Watchlist.query.get_or_404(list_id)
-    form = EditWatchlistForm(obj=watchlist)
-    if form.validate_on_submit():
-        watchlist.title = form.title.data
-        watchlist.description = form.description.data
-        watchlist.is_shared = form.is_shared.data
-        db.session.commit()
-        flash('Changes successfully made to watchlist','info')
-        return redirect(f'/user/{current_user.id}/watchlists')
-    return render_template('watchlists/watchlist_edit.html', form=form)
+    if current_user.id == watchlist.user_id:
+        form = EditWatchlistForm(obj=watchlist)
+        if form.validate_on_submit():
+            watchlist.title = form.title.data
+            watchlist.description = form.description.data
+            watchlist.is_shared = form.is_shared.data
+            db.session.commit()
+            flash('Changes successfully made to watchlist','info')
+            return redirect(f'/user/{current_user.id}/watchlists')
+        return render_template('watchlists/watchlist_edit.html', form=form)
+    else:
+        return('',403)
 
 
 @app.route('/watchlists')
@@ -373,7 +366,7 @@ def user_watchlists(user_id):
         watchlists = Watchlist.query.filter_by(user_id=user_id).all()
         return render_template('user/my_watchlists.html', watchlists=watchlists)
     else:
-        return('not authorized to view this user watchlists')
+        return('',403)
     
 @app.route('/user/new')
 def redirect_to_register():
