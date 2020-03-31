@@ -1,5 +1,5 @@
-from flask import Flask, request, render_template, redirect, flash, session
-from flask_debugtoolbar import DebugToolbarExtension
+from flask import Flask, request, render_template, redirect, flash, session, url_for
+#from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
 from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
@@ -12,11 +12,11 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+#app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
-debug = DebugToolbarExtension(app)
+#debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -49,7 +49,7 @@ def login():
         )
         login_user(user, remember=form.remember.data)
         return redirect('/')
-    return render_template('login.html', form=form)
+    return render_template('user/login.html', form=form)
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -64,16 +64,16 @@ def register():
             db.session.commit()
         except IntegrityError:
             flash('username taken')
-            return render_template('register.html', form=form)
+            return render_template('user/register.html', form=form)
         login_user(user)
         return redirect('/')
     else:
-        return render_template('register.html', form=form)
+        return render_template('user/register.html', form=form)
 
 @app.route('/profile', methods=['GET'])
 @login_required
 def user_profile():
-    return render_template('profile.html')
+    return render_template('user/profile.html')
 
 @app.route('/user/<int:user_id>/edit', methods=['GET','POST'])
 @login_required
@@ -87,7 +87,7 @@ def edit_user(user_id):
             db.session.commit()     
             return redirect('/profile')
 
-        return render_template('user_edit.html', user=current_user, form=form)
+        return render_template('user/edit.html', user=current_user, form=form)
     else:
         return('unauthorized')
 
@@ -118,7 +118,7 @@ def show_search():
     else:
         if 'total' in session:
             session.pop('total')
-        return render_template('search_form.html', form=form)
+        return render_template('search/search_form.html', form=form)
 
 @app.route('/search/results/<int:page_num>')
 def get_next_search_page(page_num):
@@ -137,7 +137,7 @@ def get_next_search_page(page_num):
         session['total'] = movies['total']
 
     return render_template(
-        'search_results.html',
+        'search/search_results.html',
         movies=movies['results'],
         total=session['total'],
         audio=session['audio'],
@@ -153,7 +153,7 @@ def get_next_search_page(page_num):
 # TODO: separate this function:
 #           - add movie to saved_movies table
 #           - add saved_movie to watchlists table
-@app.route('/watchlist/<int:list_id>/insert_movie')
+@app.route('/watchlists/<int:list_id>/insert_movie')
 def add_movie_to_watchlist(list_id):
 
     # restrict action to logged in user
@@ -190,7 +190,7 @@ def add_movie_to_watchlist(list_id):
         db.session.commit()
     except:
         db.session.rollback()
-        return render_template('temp_watchlist_error.html')
+        return render_template('temp/temp_watchlist_error.html')
     return_page = session['return_page']
     return redirect(f'/search/results/{return_page}')
 ######
@@ -205,7 +205,7 @@ def pick_watchlist():
     if form.validate_on_submit():
         
         #return_page = session['return_page']
-        return redirect(f'/watchlist/{form.watchlist.data}/insert_movie')
+        return redirect(f'/watchlists/{form.watchlist.data}/insert_movie')
 
     # GET:
     # return list of user-owned watchlists for dropdown display on template
@@ -213,10 +213,10 @@ def pick_watchlist():
     session['title'] = request.form['title']
     session['video_type'] = request.form['video-type']
     session['return_page'] = request.form['return-page']
-    return render_template('pick_watchlist.html', form=form)
+    return render_template('watchlists/pick_watchlist.html', form=form)
 
 
-@app.route('/watchlist/<int:list_id>/remove_movie/<int:movie_id>', methods=['POST'])
+@app.route('/watchlists/<int:list_id>/remove_movie/<int:movie_id>', methods=['POST'])
 def remove_movie_from_watchlist(list_id, movie_id):
 
     # restrict action to logged in user
@@ -233,11 +233,11 @@ def remove_movie_from_watchlist(list_id, movie_id):
     watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
     db.session.delete(watchlist_entry)
     db.session.commit()
-    return redirect(f'/watchlist/{list_id}')
+    return redirect(f'/watchlists/{list_id}')
     
 
 
-@app.route('/watchlist/<int:list_id>')
+@app.route('/watchlists/<int:list_id>')
 def show_watchlist_detail(list_id):
     # list editing options should be displayed for authorized users
     # authorize (check if list owned by current user) and pass boolean into template
@@ -248,9 +248,9 @@ def show_watchlist_detail(list_id):
     else:
         is_owner = False
 
-    return render_template('watchlist_detail.html', watchlist=watchlist, is_owner=is_owner)
+    return render_template('watchlists/watchlist_detail.html', watchlist=watchlist, is_owner=is_owner)
 
-@app.route('/watchlist/new', methods=['GET','POST'])
+@app.route('/watchlists/new', methods=['GET','POST'])
 @login_required
 def new_watchlist():
     form = NewWatchlistForm()
@@ -263,11 +263,11 @@ def new_watchlist():
         )
         db.session.add(watchlist)
         db.session.commit()
-        return redirect(f'/watchlist/{watchlist.id}')
+        return redirect(f'/watchlists/{watchlist.id}')
     else:
-        return render_template('watchlist_new.html', form=form)
+        return render_template('watchlists/watchlist_new.html', form=form)
 
-@app.route('/watchlist/<int:list_id>/delete', methods=['POST'])
+@app.route('/watchlists/<int:list_id>/delete', methods=['POST'])
 @login_required
 def delete_watchlist(list_id):
     watchlist = Watchlist.query.get_or_404(list_id)
@@ -275,7 +275,7 @@ def delete_watchlist(list_id):
     db.session.commit()
     return redirect(f'/user/{current_user.id}/watchlists')
 
-@app.route('/watchlist/<int:list_id>/edit', methods=['GET','POST'])
+@app.route('/watchlists/<int:list_id>/edit', methods=['GET','POST'])
 @login_required
 def edit_watchlist(list_id):
     watchlist = Watchlist.query.get_or_404(list_id)
@@ -286,22 +286,26 @@ def edit_watchlist(list_id):
         watchlist.is_shared = form.is_shared.data
         db.session.commit()
         return redirect(f'/user/{current_user.id}/watchlists')
-    return render_template('watchlist_edit.html', form=form)
+    return render_template('watchlists/watchlist_edit.html', form=form)
     
 
 @app.route('/watchlists')
 def shared_watchlists():
     watchlists = Watchlist.query.filter_by(is_shared=True).all()
-    return render_template('watchlists.html', watchlists=watchlists)
+    return render_template('watchlists/watchlists.html', watchlists=watchlists)
 
 @app.route('/user/<int:user_id>/watchlists')
 @login_required
 def user_watchlists(user_id):
     if current_user.id == user_id:
         watchlists = Watchlist.query.filter_by(user_id=user_id).all()
-        return render_template('user_watchlists.html', watchlists=watchlists)
+        return render_template('user/my_watchlists.html', watchlists=watchlists)
     else:
         return('not authorized to view this user watchlists')
+    
+@app.route('/user/new')
+def redirect_to_register():
+    return redirect(url_for('register'))
 
 ################### MOVIE ROUTES #######################
 
@@ -309,6 +313,6 @@ def user_watchlists(user_id):
 def show_movie_details(id):
     dbmovie = SavedMovie.query.get_or_404(id)
     movie = get_movie_detail(dbmovie.netflix_id)
-    return render_template('movie_details.html', movie=movie)
+    return render_template('movie/movie_details.html', movie=movie)
 
 ################### HELPERS #######################

@@ -10,7 +10,7 @@
     <li class="list-group-item">
         <a href="/movie/{{movie.id}}">{{movie.title}}</a>
         {% if is_owner %}
-        <form method="POST" action="/watchlist/{{watchlist.id}}/remove_movie/{{movie.id}}">
+        <form method="POST" action="/watchlists/{{watchlist.id}}/remove_movie/{{movie.id}}">
             <button class="badge badge-xs btn-danger float-right">
                 del
             </button>
@@ -21,6 +21,6 @@
 </ul>
 
 {% if is_owner %}
-<p class="light-message"><a href="/watchlist/{{watchlist.id}}/edit">Edit watchlist description</a></p>
+<p class="light-message"><a href="/watchlists/{{watchlist.id}}/edit">Edit watchlist description</a></p>
 {% endif %}
 {% endblock %}

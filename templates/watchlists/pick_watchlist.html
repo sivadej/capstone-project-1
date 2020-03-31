@@ -3,7 +3,7 @@
 {% block body %}
 <p class="light-message">Pick a watchlist to add this movie to:</p>
 
-<p><a href="/watchlist/new">New Watchlist</a></p>
+<p><a href="/watchlists/new">New Watchlist</a></p>
 <form method="POST">
     {{form.hidden_tag()}}
     {% for field in form if field.widget.input_type != 'hidden' %}

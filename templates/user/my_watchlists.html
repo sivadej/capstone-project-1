@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+{% block title %}My Watchlists{% endblock %}
+{% block body %}
+<h1>My Watchlists</h1>
+<a class="btn btn-secondary" href="/watchlists/new">New Watchlist</a>
+<ul class="list-group">
+    {%for watchlist in watchlists %}
+    <li class="list-group-item"><a href="/watchlists/{{watchlist.id}}">{{watchlist.title}}</a> - Public:
+        {{watchlist.is_shared}} - <a href="/watchlists/{{watchlist.id}}/edit">edit</a> - <form
+            action="/watchlists/{{watchlist.id}}/delete" method="POST">
+            <button>delete</button></form>
+    </li>
+    {%endfor%}
+</ul>
+{% endblock %}
