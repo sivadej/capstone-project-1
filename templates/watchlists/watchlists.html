@@ -3,7 +3,7 @@
 {% block body %}
 <ul class="list-group">
     {%for watchlist in watchlists %}
-    <li><a class="list-group-item" href="/watchlist/{{watchlist.id}}">{{watchlist.title}}</a></li>
+    <li><a class="list-group-item" href="/watchlists/{{watchlist.id}}">{{watchlist.title}}</a></li>
     {%endfor%}
 </ul>
 {% endblock %}

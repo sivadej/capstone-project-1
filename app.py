@@ -153,7 +153,7 @@ def get_next_search_page(page_num):
 # TODO: separate this function:
 #           - add movie to saved_movies table
 #           - add saved_movie to watchlists table
-@app.route('/watchlist/<int:list_id>/insert_movie')
+@app.route('/watchlists/<int:list_id>/insert_movie')
 def add_movie_to_watchlist(list_id):
 
     # restrict action to logged in user
@@ -205,7 +205,7 @@ def pick_watchlist():
     if form.validate_on_submit():
         
         #return_page = session['return_page']
-        return redirect(f'/watchlist/{form.watchlist.data}/insert_movie')
+        return redirect(f'/watchlists/{form.watchlist.data}/insert_movie')
 
     # GET:
     # return list of user-owned watchlists for dropdown display on template
@@ -216,7 +216,7 @@ def pick_watchlist():
     return render_template('watchlists/pick_watchlist.html', form=form)
 
 
-@app.route('/watchlist/<int:list_id>/remove_movie/<int:movie_id>', methods=['POST'])
+@app.route('/watchlists/<int:list_id>/remove_movie/<int:movie_id>', methods=['POST'])
 def remove_movie_from_watchlist(list_id, movie_id):
 
     # restrict action to logged in user
@@ -233,11 +233,11 @@ def remove_movie_from_watchlist(list_id, movie_id):
     watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
     db.session.delete(watchlist_entry)
     db.session.commit()
-    return redirect(f'/watchlist/{list_id}')
+    return redirect(f'/watchlists/{list_id}')
     
 
 
-@app.route('/watchlist/<int:list_id>')
+@app.route('/watchlists/<int:list_id>')
 def show_watchlist_detail(list_id):
     # list editing options should be displayed for authorized users
     # authorize (check if list owned by current user) and pass boolean into template
@@ -250,7 +250,7 @@ def show_watchlist_detail(list_id):
 
     return render_template('watchlists/watchlist_detail.html', watchlist=watchlist, is_owner=is_owner)
 
-@app.route('/watchlist/new', methods=['GET','POST'])
+@app.route('/watchlists/new', methods=['GET','POST'])
 @login_required
 def new_watchlist():
     form = NewWatchlistForm()
@@ -263,11 +263,11 @@ def new_watchlist():
         )
         db.session.add(watchlist)
         db.session.commit()
-        return redirect(f'/watchlist/{watchlist.id}')
+        return redirect(f'/watchlists/{watchlist.id}')
     else:
         return render_template('watchlists/watchlist_new.html', form=form)
 
-@app.route('/watchlist/<int:list_id>/delete', methods=['POST'])
+@app.route('/watchlists/<int:list_id>/delete', methods=['POST'])
 @login_required
 def delete_watchlist(list_id):
     watchlist = Watchlist.query.get_or_404(list_id)
@@ -275,7 +275,7 @@ def delete_watchlist(list_id):
     db.session.commit()
     return redirect(f'/user/{current_user.id}/watchlists')
 
-@app.route('/watchlist/<int:list_id>/edit', methods=['GET','POST'])
+@app.route('/watchlists/<int:list_id>/edit', methods=['GET','POST'])
 @login_required
 def edit_watchlist(list_id):
     watchlist = Watchlist.query.get_or_404(list_id)
