@@ -73,6 +73,7 @@ def get_movie_detail(netflix_id):
         'image_url' : response['img'],
         'synopsis' : response['synopsis'],
         'video_type' : response['vtype'],
+        'imdbid' : response['imdbid'],
         'netflix_id' : netflix_id,
     }
     

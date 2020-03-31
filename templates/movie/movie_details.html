@@ -1,18 +1,22 @@
 {% extends '_base.html' %}
 {% block title %}{{movie.title}} - What2Watch{% endblock %}
 {% block body %}
-<div class="row">
-  <div class="col-sm-6 col-md-4 col-lg-3">
-    <div class="card mb-4">
-      <img class="card-img-top zoom" src="{{movie.image_url}}" alt="{{movie.title}}">
-      <div class="card-body">
-        <p class="video-type">{{movie.video_type}}</p>
-        <h4 class="card-title pt-0">{{movie.title}}</h4>
-        <p class="card-text">{{movie.synopsis}}</p>
-        <p class="card-text text-center"><a href="https://www.netflix.com/watch/{{movie.netflix_id}}"
-        class="btn btn-sm btn-danger">Watch on Netflix</a></p>
-      </div>
+<h1 class="text-center">Movie Details</h1>
+<div class="row movie-container">
+<div class="col-sm-12">
+  <div class="card zoom">
+    <img src="{{movie.image_url}}" class="card-img">
+    <div class="card-container">
+      <p class="video-type">{{movie.video_type}}</p>
+      <p class="movie-title">{{movie.title}}</p>
+      <p class="movie-synopsis">{{movie.synopsis}}</p>
+      <p class="text-center"><button form="form1" formmethod="GET" formaction="https://www.netflix.com/watch/{{movie.nfid}}" class="btn btn-danger">Watch on Netflix</button></p>
+      {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
+      <p class="text-center imdb-info"><a href="https://www.imdb.com/title/{{movie.imdbid}}" target="_new">More Info on IMDB</a></p>
+      {% endif %}
     </div>
   </div>
 </div>
+</div>
+
 {% endblock %}
