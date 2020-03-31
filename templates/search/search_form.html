@@ -1,14 +1,24 @@
 {% extends '_base.html' %}
 {% block title %}Search{% endblock %}
 {% block body %}
-<h1>Search</h1>
-<form method="POST">
-    {{form.hidden_tag()}}
-    {% for field in form if field.widget.input_type != 'hidden' %}
-    <p>
-        {{field.label}} {{field}} {% for error in field.errors %} {{error}} {%endfor%}
-    </p>
-    {% endfor %}
-    <button>Submit</button>
-</form>
+<div>
+	<h1>Search</h1>
+    <form method="POST" class="form-inline">
+			{{form.hidden_tag()}}
+			{% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type != 'checkbox' %}
+			<div class="form-group">
+				{{field.label}} {{field(class_="form-control transparent search-input")}}
+			</div>
+			{% endfor %} <br>
+			{% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type == 'checkbox' %}
+			<div class="checkbox">
+				{{field.label}} {{field}}
+			</div>
+			{% endfor %}
+			<button type="submit" class="btn btn-danger">Search</button>
+    </form>
+</div>
+{% for field in form if field.widget.input_type != 'hidden' %}
+{% for error in field.errors %} {{error}} {%endfor%}
+{% endfor %}
 {% endblock %}

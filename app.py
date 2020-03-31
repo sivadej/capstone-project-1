@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, flash, session, url_for
-#from flask_debugtoolbar import DebugToolbarExtension
+from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
 from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
@@ -12,11 +12,11 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = SECRET_KEY
-#app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
-#debug = DebugToolbarExtension(app)
+debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -29,15 +29,58 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
-@app.route('/')
-def show_home():
-    print(current_user)
-    return render_template('hello.html')
+@app.route('/', methods=['GET','POST'])
+def redirect_to_search():
+    return redirect(url_for('show_search'))
+
+@app.route('/flashme')
+def flashme():
+    flash('redirected to search','warning')
+    return redirect('/')
+
+@app.route('/temp/search', methods=['GET','POST'])
+def temp_search():
+    form = MovieSearchForm()
+    if form.validate_on_submit():
+        # save form data to session, send to results page 1
+        # TODO: use session data for loading search page values from last visit
+        session['audio'] = form.audio.data
+        session['subs'] = form.subs.data
+        session['start_year'] = form.year_from.data
+        session['end_year'] = form.year_to.data
+        session['filter_movie'] = form.filter_movie.data
+        session['filter_series'] = form.filter_series.data
+
+        try:
+            data = json.loads(response)
+            movies = data['results']
+            total = data['total']
+        except:
+            movies = None
+        return redirect('/search/results/1')
+
+    else:
+        if 'total' in session:
+            session.pop('total')
+        return render_template('temp/temp_search.html', form=form)
+    return render_template('temp/temp_search.html')
+
+#@app.route('/')
+#def show_home():
+#    print(current_user)
+#    return render_template('hello.html')
 
 @app.route('/logout')
 def logout():
     logout_user()
+    flash('Logged out.','info')
     return redirect('/')
+
+@app.route('/my_lists')
+@login_required
+def redirect_to_user_watchlists():
+    return redirect(f'/user/{current_user.id}/watchlists')
+
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -48,7 +91,10 @@ def login():
             password = form.password.data,
         )
         login_user(user, remember=form.remember.data)
-        return redirect('/')
+        flash('Successfully logged in. Welcome back!','success')
+        return redirect('/profile')
+    #if form.is_submitted():
+    #    flash('Error logging in.','warning')
     return render_template('user/login.html', form=form)
 
 @app.route('/register', methods=['GET','POST'])
@@ -84,7 +130,8 @@ def edit_user(user_id):
             user = User.query.get(user_id)
             user.username = form.username.data
             user.email = form.email.data
-            db.session.commit()     
+            db.session.commit()
+            flash('Changes successfully made to account','info')
             return redirect('/profile')
 
         return render_template('user/edit.html', user=current_user, form=form)
@@ -118,7 +165,7 @@ def show_search():
     else:
         if 'total' in session:
             session.pop('total')
-        return render_template('search/search_form.html', form=form)
+        return render_template('newindex.html', form=form)
 
 @app.route('/search/results/<int:page_num>')
 def get_next_search_page(page_num):
@@ -135,24 +182,24 @@ def get_next_search_page(page_num):
     # store total results found because it is only returned by API when offset == 0
     if page_num == 1:
         session['total'] = movies['total']
-
-    return render_template(
-        'search/search_results.html',
-        movies=movies['results'],
-        total=session['total'],
-        audio=session['audio'],
-        subs=session['subs'],
-        page=page_num,
-        next_page=(page_num+1),
-        result_start=(((page_num-1)*12)+1),
-        result_end=(page_num*12),
-        )
+    
+    if session['total'] == 0:
+        return render_template('search/search_noresults.html')
+    else:
+        return render_template(
+            'search/search_results.html',
+            movies=movies['results'],
+            total=session['total'],
+            audio=session['audio'],
+            subs=session['subs'],
+            page=page_num,
+            next_page=(page_num+1),
+            result_start=(((page_num-1)*12)+1),
+            result_end=(page_num*12),
+            )
 
 ################### WATCHLIST ROUTES ###################
 
-# TODO: separate this function:
-#           - add movie to saved_movies table
-#           - add saved_movie to watchlists table
 @app.route('/watchlists/<int:list_id>/insert_movie')
 def add_movie_to_watchlist(list_id):
 
@@ -193,7 +240,9 @@ def add_movie_to_watchlist(list_id):
         return render_template('temp/temp_watchlist_error.html')
     return_page = session['return_page']
     return redirect(f'/search/results/{return_page}')
+
 ######
+
 @app.route('/test_picklist/get_watchlist_for_movie', methods=['GET','POST'])
 @login_required
 def pick_watchlist():
@@ -203,7 +252,6 @@ def pick_watchlist():
 
     # POST: return selected watchlist_id
     if form.validate_on_submit():
-        
         #return_page = session['return_page']
         return redirect(f'/watchlists/{form.watchlist.data}/insert_movie')
 
@@ -227,15 +275,14 @@ def remove_movie_from_watchlist(list_id, movie_id):
     curr_list = Watchlist.query.get(list_id)
     if curr_list.user_id != current_user.id:
         return('you are not authorized to edit this watchlist')
-    
-    
-    
+
     watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
+    movie = SavedMovie.query.get(movie_id)
+    title = movie.title
     db.session.delete(watchlist_entry)
     db.session.commit()
+    flash(f'Removed "{title}" from list','warning')
     return redirect(f'/watchlists/{list_id}')
-    
-
 
 @app.route('/watchlists/<int:list_id>')
 def show_watchlist_detail(list_id):
@@ -263,7 +310,8 @@ def new_watchlist():
         )
         db.session.add(watchlist)
         db.session.commit()
-        return redirect(f'/watchlists/{watchlist.id}')
+        flash(f'Watchlist "{watchlist.title}" successfully added','info')
+        return redirect('/my_lists')
     else:
         return render_template('watchlists/watchlist_new.html', form=form)
 
@@ -271,8 +319,10 @@ def new_watchlist():
 @login_required
 def delete_watchlist(list_id):
     watchlist = Watchlist.query.get_or_404(list_id)
+    title = watchlist.title
     db.session.delete(watchlist)
     db.session.commit()
+    flash(f'Watchlist "{title}" deleted','warning')
     return redirect(f'/user/{current_user.id}/watchlists')
 
 @app.route('/watchlists/<int:list_id>/edit', methods=['GET','POST'])
@@ -285,9 +335,10 @@ def edit_watchlist(list_id):
         watchlist.description = form.description.data
         watchlist.is_shared = form.is_shared.data
         db.session.commit()
+        flash('Changes successfully made to watchlist','info')
         return redirect(f'/user/{current_user.id}/watchlists')
     return render_template('watchlists/watchlist_edit.html', form=form)
-    
+
 
 @app.route('/watchlists')
 def shared_watchlists():

@@ -1,16 +1,11 @@
 {% extends '_base.html' %}
-{% block title %}{{current_user.username}}'s Profile{% endblock %}
+{% block title %}{{current_user.username}}'s Account{% endblock %}
 {% block body %}
-
-<p class="light-message">
-    Hello, {{current_user.username}}! IN THE DATABASE YOU ARE USER ID # {{current_user.id}}
-</p>
+<h1>Your Account Profile</h1>
+<h5>Username: {{current_user.username}}<br>Email: {{current_user.email}}</h5>
 <ul class="list-group">
-    <li><a class="list-group-item active" href="/search">search for movies</a></li>
-    <li><a class="list-group-item" href="/watchlists">public watchlists</a></li>
-    <li><a class="list-group-item" href="/user/{{current_user.id}}/watchlists">my watchlists</a></li>
-    <li><a class="list-group-item" href="/user/{{current_user.id}}/edit">edit account</a></li>
-    <li></li>
-    <li><a class="list-group-item" href="/logout">logout</a></li>
+    <li class="list-group-item" ><a href="/user/{{current_user.id}}/watchlists">Manage Your Watchlists</a> <span class="small-title"><br>Some description of it</span></li>
+    <li class="list-group-item" ><a href="/user/{{current_user.id}}/edit">Edit Account</a> <span class="small-title"><br>Some description of it</span></li>
+    <li class="list-group-item" ><a href="/user/{{current_user.id}}/delete" onclick="return confirmDelete('acct')">Delete Account</a> <span class="small-title"><br>Remove your account permanently. You will lose all your saved watchlists. This cannot be undone.</span></li>
 </ul>
 {% endblock %}

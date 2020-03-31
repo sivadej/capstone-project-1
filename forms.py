@@ -2,8 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SelectField, IntegerField, BooleanField
 from wtforms.validators import InputRequired, Length, Email, NumberRange
 
-audio_langs = ['English','Spanish','Cantonese','Brazilian','Tagalog','French','German','Mandarin','Arabic','Korean','Slovak','Thai','Turkish','Vietnamese']
-sub_langs = ['English','Spanish','Brazilian','Tagalog','French','German','Arabic','Korean','Slovak','Thai','Chinese','Turkish','Vietnamese']
+audio_langs = ['English','Spanish','Cantonese','Tagalog','French','German','Mandarin','Arabic','Korean','Thai','Turkish','Vietnamese','Russian','Portuguese','Polish']
+sub_langs = ['English','Spanish','Tagalog','French','German','Arabic','Korean','Thai','Chinese','Turkish','Vietnamese','Russian','Portuguese','Polish']
 
 def get_tuples(langs):
     list_of_lang_tuples=[]

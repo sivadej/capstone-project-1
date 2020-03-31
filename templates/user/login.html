@@ -1,13 +1,30 @@
 {% extends '_base.html' %}
 {% block title %}Login{% endblock %}
 {% block body %}
-<form method="POST">
-    {{form.hidden_tag()}}
-    {% for field in form if field.widget.input_type != 'hidden' %}
-    <p class="light-message">
-        {{field.label}} {{field}} {% for error in field.errors %} {{error}} {%endfor%}
-    </p>
-    {% endfor %}
-    <button>Submit</button>
-</form>
+<div class="form-container">
+    <h1>Login</h1>
+    <form class="form-horizontal" method="POST">
+        {{form.hidden_tag()}}
+        {% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type != 'checkbox' %}
+        <div class="form-group">
+            {{field.label(class_="control-label col-sm-3")}}
+            <div class="col-sm-9">{{field(class_="form-control")}}</div>
+        </div>
+        {% endfor %}
+        {% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type == 'checkbox' %}
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <div class="checkbox">
+                    {{field.label}} {{field}}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+      <div class="form-group">        
+        <div class="col-sm-offset-3 col-sm-9">
+          <button type="submit" class="btn btn-danger">Login</button>
+        </div>
+      </div>
+    </form>
+  </div>
 {% endblock %}
