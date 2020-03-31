@@ -3,6 +3,7 @@ body {
     color: black;
 }
 
+
 .page-title {
     color:white;
 }
@@ -18,7 +19,9 @@ label {
 }
 
 h1 {
-    color: white;
+    color: #dc3545;
+    font-size: 4rem;
+    font-weight: 300;
 }
 
 .btn {
@@ -49,4 +52,13 @@ h1 {
   .red-highlight {
       color: #dc3545;
       font-weight: 600;
+  }
+
+  .page-container {
+      margin-top: 100px;
+  }
+
+  .search-input {
+      width: 100px;
+      margin-right: 10px;
   }

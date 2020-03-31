@@ -1,6 +1,7 @@
 {% extends '_base.html' %}
 {% block title %}Shared Watchlists{% endblock %}
 {% block body %}
+<h1>Shared Watchlists</h1>
 <ul class="list-group">
     {%for watchlist in watchlists %}
     <li><a class="list-group-item" href="/watchlists/{{watchlist.id}}">{{watchlist.title}}</a></li>
