@@ -28,6 +28,16 @@ input[type=checkbox] {
     width: 550px;
     margin: auto;
     border-radius: 10px;
+    border: 2px solid rgb(119, 119, 119);
+}
+
+.list-group-item {
+    background-color: rgb(49, 49, 49);
+    border-radius: 5px;
+}
+
+.list-group-item a {
+    color: rgb(255, 221, 193);
 }
 
 .search-btn {
