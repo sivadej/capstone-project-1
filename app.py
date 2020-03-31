@@ -90,9 +90,14 @@ def login():
             username = form.username.data,
             password = form.password.data,
         )
-        login_user(user, remember=form.remember.data)
-        flash('Successfully logged in. Welcome back!','success')
-        return redirect('/profile')
+        import pdb;pdb.set_trace()
+        if user is False:
+            flash('Invalid login details. Try Again.','danger')
+            return redirect('/login')
+        else:
+            login_user(user, remember=form.remember.data)
+            flash('Successfully logged in. Welcome back!','success')
+            return redirect('/profile')
     #if form.is_submitted():
     #    flash('Error logging in.','warning')
     return render_template('user/login.html', form=form)

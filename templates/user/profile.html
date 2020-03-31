@@ -1,7 +1,7 @@
 {% extends '_base.html' %}
 {% block title %}{{current_user.username}}'s Account{% endblock %}
 {% block body %}
-<h1>Your Account Profile</h1>
+<h1>Your Account</h1>
 <h5>Username: {{current_user.username}}<br>Email: {{current_user.email}}</h5>
 <ul class="list-group">
     <li class="list-group-item" ><a href="/user/{{current_user.id}}/watchlists">Manage Your Watchlists</a> <span class="small-title"><br>Some description of it</span></li>
