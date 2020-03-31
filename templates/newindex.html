@@ -30,7 +30,7 @@
                               {{form.hidden_tag()}}
                               {% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type != 'checkbox' %}
                               <div class="form-group">
-                                {{field.label}} {{field(class_="form-control transparent search-input")}}
+                                {{field.label}} {{field(class_="form-control transparent home-search-input")}}
                               </div>
                               {% endfor %}
                               <div class="row">
