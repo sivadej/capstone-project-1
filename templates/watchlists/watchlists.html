@@ -2,7 +2,7 @@
 {% block title %}Shared Watchlists{% endblock %}
 {% block body %}
 <h1>Shared Watchlists</h1>
-<h5>These are watchlists shared by all users. Click to see the movies in each list:</h5>
+<h5>These are watchlists curated and shared by our lovely users! Click on a list to check out the movies:</h5>
 <ul class="list-group">
     {%for watchlist in watchlists %}
     <li class="list-group-item" ><a href="/watchlists/{{watchlist.id}}">{{watchlist.title}}</a> <span class="small-title"><br>Created by {{watchlist.user.username}}</span></li>
