@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, flash, session, url_for
-#from flask_debugtoolbar import DebugToolbarExtension
+from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
 from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
@@ -12,11 +12,11 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = SECRET_KEY
-#app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
-#debug = DebugToolbarExtension(app)
+debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -196,9 +196,6 @@ def get_next_search_page(page_num):
 
 ################### WATCHLIST ROUTES ###################
 
-# TODO: separate this function:
-#           - add movie to saved_movies table
-#           - add saved_movie to watchlists table
 @app.route('/watchlists/<int:list_id>/insert_movie')
 def add_movie_to_watchlist(list_id):
 
@@ -239,7 +236,9 @@ def add_movie_to_watchlist(list_id):
         return render_template('temp/temp_watchlist_error.html')
     return_page = session['return_page']
     return redirect(f'/search/results/{return_page}')
+
 ######
+
 @app.route('/test_picklist/get_watchlist_for_movie', methods=['GET','POST'])
 @login_required
 def pick_watchlist():
@@ -249,7 +248,6 @@ def pick_watchlist():
 
     # POST: return selected watchlist_id
     if form.validate_on_submit():
-        
         #return_page = session['return_page']
         return redirect(f'/watchlists/{form.watchlist.data}/insert_movie')
 
@@ -273,15 +271,11 @@ def remove_movie_from_watchlist(list_id, movie_id):
     curr_list = Watchlist.query.get(list_id)
     if curr_list.user_id != current_user.id:
         return('you are not authorized to edit this watchlist')
-    
-    
-    
+
     watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
     db.session.delete(watchlist_entry)
     db.session.commit()
     return redirect(f'/watchlists/{list_id}')
-    
-
 
 @app.route('/watchlists/<int:list_id>')
 def show_watchlist_detail(list_id):
@@ -333,7 +327,7 @@ def edit_watchlist(list_id):
         db.session.commit()
         return redirect(f'/user/{current_user.id}/watchlists')
     return render_template('watchlists/watchlist_edit.html', form=form)
-    
+
 
 @app.route('/watchlists')
 def shared_watchlists():

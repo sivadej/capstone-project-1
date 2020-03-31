@@ -68,11 +68,11 @@ h2,h3,h4,h5,h6 {
   }
 
   .video-type {
-      font-size: 0.8rem;
+      font-size: 1rem;
       margin-bottom: 0px;
       text-align: left;
       text-transform: capitalize;
-      color: #909090
+      color: #b1b1b1
   }
 
   .light-message {
@@ -120,6 +120,47 @@ h2,h3,h4,h5,h6 {
   .search-checkbox {
     float: auto;
     margin-left: 0;
+  }
+
+
+  .card {
+    width: 100%;
+    border-radius: 5px;
+    background-color: rgb(44, 44, 44);
+    margin: 10px 30px 10px 10px;
+    padding: 2px;
+    height: 650px;
+  }
+  
+
+  
+  .card-img {
+    border-radius: 5px 5px 0 0;
+    width: 100%;
+  }
+  
+  .card-container {
+    padding: 10px;
+  }
+
+  .movie-title{
+      font-size: 2rem;
+      margin-bottom: 0;
+  }
+
+  .movie-synopsis{
+      font-size: 1.25rem;
+  }
+
+  .card-footer{
+      padding: 2px;
+      background-color: rgb(54, 54, 54);
+      font-size: 1.25rem;
+  }
+
+  .imdb-info{
+      font-size: 1.2rem;
+      
   }
 
 @media (max-width: 768px){
