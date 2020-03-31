@@ -117,8 +117,7 @@ def register():
             return render_template('user/register.html', form=form)
         login_user(user)
         return redirect('/')
-    else:
-        return render_template('user/register.html', form=form)
+    return render_template('user/register.html', form=form)
 
 @app.route('/profile', methods=['GET'])
 @login_required

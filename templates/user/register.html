@@ -2,6 +2,7 @@
 {% block title %}Register{% endblock %}
 {% block body %}
 <div class="form-container">
+
     <h1>Sign Up</h1>
     <form class="form-horizontal" method="POST">
         {{form.hidden_tag()}}
@@ -26,5 +27,14 @@
         </div>
       </div>
     </form>
+    {% if form.errors %}
+    <div class="alert alert-warning">
+          {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+              {% for error in field_errors %}
+                  {{ error }}<br>
+              {% endfor %}
+          {% endfor %}
+    </div>
+    {% endif %}
   </div>
 {% endblock %}
