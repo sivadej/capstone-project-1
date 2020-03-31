@@ -109,7 +109,7 @@ def register():
             )
             db.session.commit()
         except IntegrityError:
-            flash('username taken')
+            flash('Username taken.','warning')
             return render_template('user/register.html', form=form)
         login_user(user)
         return redirect('/')
@@ -137,6 +137,19 @@ def edit_user(user_id):
         return render_template('user/edit.html', user=current_user, form=form)
     else:
         return('unauthorized')
+
+@app.route('/user/<int:user_id>/delete')
+@login_required
+def delete_user(user_id):
+    if current_user.id == user_id:
+        user = User.query.get(user_id)
+        db.session.delete(user)
+        db.session.commit()
+        flash('User account deleted.','warning')
+        return redirect('/logout')
+    else:
+        return('unauthorized')
+
 
 
 ################### SEARCH ROUTES ###################
@@ -223,7 +236,9 @@ def add_movie_to_watchlist(list_id):
         db.session.add(new_movie)
         db.session.commit()
         dbmovie = new_movie
-    
+
+    return_page = session['return_page']
+
     # clean up session
     session.pop('netflix_id', None)
     session.pop('title', None)
@@ -237,8 +252,10 @@ def add_movie_to_watchlist(list_id):
         db.session.commit()
     except:
         db.session.rollback()
-        return render_template('temp/temp_watchlist_error.html')
-    return_page = session['return_page']
+        flash('Movie already exists in the selected list.','warning')
+        return redirect(f'/search/results/{return_page}')
+
+    flash('Added to your watchlist!','info')
     return redirect(f'/search/results/{return_page}')
 
 ######
@@ -252,7 +269,6 @@ def pick_watchlist():
 
     # POST: return selected watchlist_id
     if form.validate_on_submit():
-        flash('Added to your watchlist!','info')
         return redirect(f'/watchlists/{form.watchlist.data}/insert_movie')
 
     # GET:
