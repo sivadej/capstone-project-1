@@ -6,7 +6,7 @@
     {%for watchlist in watchlists %}
     <li class="list-group-item"><a href="/watchlists/{{watchlist.id}}">{{watchlist.title}}</a>
         <span class="small-title">{% if watchlist.is_shared %}Public{%else%}Private{% endif %}</span>
-        <button form="form1" formmethod="post" formaction="/watchlists/{{watchlist.id}}/delete" class="badge btn-danger">Delete List</button>
+        <button form="form1" formmethod="post" formaction="/watchlists/{{watchlist.id}}/delete" class="badge btn-danger" onclick="return confirmDelete('list')">Delete List</button>
     </li>
     {%endfor%}
 </ul>

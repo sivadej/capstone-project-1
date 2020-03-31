@@ -6,6 +6,6 @@
 <ul class="list-group">
     <li class="list-group-item" ><a href="/user/{{current_user.id}}/watchlists">Manage Your Watchlists</a> <span class="small-title"><br>Some description of it</span></li>
     <li class="list-group-item" ><a href="/user/{{current_user.id}}/edit">Edit Account</a> <span class="small-title"><br>Some description of it</span></li>
-    <li class="list-group-item" ><a href="/user/{{current_user.id}}/delete">Delete Account</a> <span class="small-title"><br>Some description of it</span></li>
+    <li class="list-group-item" ><a href="/user/{{current_user.id}}/delete" onclick="return confirmDelete('acct')">Delete Account</a> <span class="small-title"><br>Remove your account permanently. You will lose all your saved watchlists. This cannot be undone.</span></li>
 </ul>
 {% endblock %}

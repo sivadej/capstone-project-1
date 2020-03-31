@@ -1,10 +1,12 @@
 {% extends '_base.html' %}
-{% block title %}{{watchlist.title}}{% endblock %}
+{% block title %}Watchlist: {{watchlist.title}}{% endblock %}
 {% block body %}
 <h1>{{watchlist.title}}{% if watchlist.is_shared == false %} <span class="small-title">(Private List)</span>{%endif%}</h1>
 {% if watchlist.description %}<h4>{{watchlist.description}}</h4>{% endif %}
 <h5>Created by {{watchlist.user.username}}</h5>
-
+{% if watchlist.movies|count == 0 %}
+<h5>This list is empty. {% if is_owner %} Add movies when you <a href="/search">search</a>!{% endif %}</h5>
+{% endif %}
 <ul class="list-group">
     {%for movie in watchlist.movies%}
     <li class="list-group-item">

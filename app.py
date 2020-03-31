@@ -182,18 +182,21 @@ def get_next_search_page(page_num):
     # store total results found because it is only returned by API when offset == 0
     if page_num == 1:
         session['total'] = movies['total']
-
-    return render_template(
-        'search/search_results.html',
-        movies=movies['results'],
-        total=session['total'],
-        audio=session['audio'],
-        subs=session['subs'],
-        page=page_num,
-        next_page=(page_num+1),
-        result_start=(((page_num-1)*12)+1),
-        result_end=(page_num*12),
-        )
+    
+    if session['total'] == 0:
+        return render_template('search/search_noresults.html')
+    else:
+        return render_template(
+            'search/search_results.html',
+            movies=movies['results'],
+            total=session['total'],
+            audio=session['audio'],
+            subs=session['subs'],
+            page=page_num,
+            next_page=(page_num+1),
+            result_start=(((page_num-1)*12)+1),
+            result_end=(page_num*12),
+            )
 
 ################### WATCHLIST ROUTES ###################
 
