@@ -183,7 +183,7 @@ def show_search():
     else:
         if 'total' in session:
             session.pop('total')
-        return render_template('newindex.html', form=form)
+        return render_template('home_search.html', form=form)
 
 @app.route('/search/results/<int:page_num>')
 def get_next_search_page(page_num):
