@@ -1,5 +1,5 @@
-from flask import Flask, request, render_template, redirect, flash, session
-from flask_debugtoolbar import DebugToolbarExtension
+from flask import Flask, request, render_template, redirect, flash, session, url_for
+#from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
 from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
@@ -12,11 +12,11 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+#app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
-debug = DebugToolbarExtension(app)
+#debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -299,9 +299,13 @@ def shared_watchlists():
 def user_watchlists(user_id):
     if current_user.id == user_id:
         watchlists = Watchlist.query.filter_by(user_id=user_id).all()
-        return render_template('watchlists/my_watchlists.html', watchlists=watchlists)
+        return render_template('user/my_watchlists.html', watchlists=watchlists)
     else:
         return('not authorized to view this user watchlists')
+    
+@app.route('/user/new')
+def redirect_to_register():
+    return redirect(url_for('register'))
 
 ################### MOVIE ROUTES #######################
 
