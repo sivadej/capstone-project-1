@@ -29,37 +29,14 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
-@app.route('/temp', methods=['GET','POST'])
-def temp_home():
-    form = MovieSearchForm()
-    if form.validate_on_submit():
-        # save form data to session, send to results page 1
-        # TODO: use session data for loading search page values from last visit
-        session['audio'] = form.audio.data
-        session['subs'] = form.subs.data
-        session['start_year'] = form.year_from.data
-        session['end_year'] = form.year_to.data
-        session['filter_movie'] = form.filter_movie.data
-        session['filter_series'] = form.filter_series.data
-
-        try:
-            data = json.loads(response)
-            movies = data['results']
-            total = data['total']
-        except:
-            movies = None
-        return redirect('/search/results/1')
-
-    else:
-        if 'total' in session:
-            session.pop('total')
-        return render_template('newindex.html', form=form)
-    return render_template('newindex.html')
+@app.route('/', methods=['GET','POST'])
+def redirect_to_search():
+    return redirect(url_for('show_search'))
 
 @app.route('/flashme')
 def flashme():
-    flash('redirected to search','info')
-    return redirect('/temp/search')
+    flash('redirected to search','warning')
+    return redirect('/')
 
 @app.route('/temp/search', methods=['GET','POST'])
 def temp_search():
@@ -88,15 +65,15 @@ def temp_search():
         return render_template('temp/temp_search.html', form=form)
     return render_template('temp/temp_search.html')
 
-@app.route('/')
-def show_home():
-    print(current_user)
-    return render_template('hello.html')
+#@app.route('/')
+#def show_home():
+#    print(current_user)
+#    return render_template('hello.html')
 
 @app.route('/logout')
 def logout():
     logout_user()
-    flash('Logged out.','danger')
+    flash('Logged out.','info')
     return redirect('/')
 
 @app.route('/my_lists')
@@ -114,8 +91,8 @@ def login():
             password = form.password.data,
         )
         login_user(user, remember=form.remember.data)
-        flash('Successfully logged in!','info')
-        return redirect('/')
+        flash('Successfully logged in. Welcome back!','success')
+        return redirect('/profile')
     #if form.is_submitted():
     #    flash('Error logging in.','warning')
     return render_template('user/login.html', form=form)
@@ -187,7 +164,7 @@ def show_search():
     else:
         if 'total' in session:
             session.pop('total')
-        return render_template('search/search_form.html', form=form)
+        return render_template('newindex.html', form=form)
 
 @app.route('/search/results/<int:page_num>')
 def get_next_search_page(page_num):

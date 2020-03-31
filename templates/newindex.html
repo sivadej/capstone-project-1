@@ -9,24 +9,23 @@
       <div class="cover black" data-color="black"></div>
        
   <!--   You can change the black color for the filter with those colors: blue, green, red, orange       -->
-  
       <div class="container">
           <h1 class="logo">
-              What-2-Watch
+              What-2-Watch<br>
+              <span class="small-title">A Bilingual Netflix Search Tool</span>
           </h1>
   <!--  H1 can have 2 designs: "logo" and "logo cursive"           -->
           
           <div class="content">
-              <h4>A bilingual Netflix search tool</h4>
+              
               <div>
                   <h5 class="info-text">
-                      Learning a new language? Trying to enjoy a movie with someone with whom you don't share a first language? 
-                  </h5>
+                      Learning a new language? Looking to enjoy a movie with someone who doesn't speak the same language? 
+                      Search below to get the latest shows and movies available in the US Netflix catalog in your selected languages. 
+                      You can save and share watchlists by creating an account.</h5>
                   <div class="row">
                       <div class="col-lg-12">
-                      
-                          
-                            <form method="POST" class="form-inline">
+                            <form method="POST" class="form-inline text-center">
                               {{form.hidden_tag()}}
                               {% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type != 'checkbox' %}
                               <div class="form-group">
@@ -36,10 +35,11 @@
                               <div class="row">
                                 {% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type == 'checkbox' %}
                                 <div class="checkbox">
-                                  {{field.label}} {{field}}
+                                  {{field.label(class_="checkboxtext")}} {{field(class_="search-checkbox")}}
                                 </div>
                                 {% endfor %}
-                                <button type="submit" class="btn btn-danger">Search</button>
+                                <br>
+                                <button type="submit" class="btn btn-danger search-btn">Search</button>
                               </div>
                             </form>
                         
@@ -50,7 +50,7 @@
       </div>
       <div class="footer">
         <div class="container">
-               Created by <a href="mailto:sbkitchpanich@gmail.com">Siva Kitchpanich</a>. See this project on <a href="https://github.com/sivadej/capstone-project-1">GitHub.</a>
+               Created by <a href="mailto:sbkitchpanich@gmail.com">Sivadej Kitchpanich</a>. View this project on <a href="https://github.com/sivadej/capstone-project-1">GitHub.</a>
         </div>
       </div>
    </div>
