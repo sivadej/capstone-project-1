@@ -17,14 +17,15 @@
 				<p class="video-type">{{movie.vtype}}</p>
 				<p class="movie-title">{{movie.title}}</p>
 				<p class="movie-synopsis">{{movie.synopsis}}</p>
-				<p class="text-center"><button form="form1" formmethod="GET" formaction="https://www.netflix.com/watch/{{movie.nfid}}" class="btn btn-danger">Watch on Netflix</button>
+				<p class="text-center"><form class="text-center"><a href="https://www.netflix.com/watch/{{movie.nfid}}" class="btn btn-danger">Watch on Netflix</a>
         {% if current_user.is_authenticated %}
-            <input form="add-movie" type="hidden" name="netflix-id" value={{movie.nfid}}>
-            <input form="add-movie" type="hidden" name="title" value='{{movie.title}}'>
-            <input form="add-movie" type="hidden" name="video-type" value={{movie.vtype}}>
-            <input form="add-movie" type="hidden" name="return-page" value={{page}}>
-            <button form="add-movie" class="btn btn-warning">Add to List</button></p>
+            <input type="hidden" name="netflix-id" value={{movie.nfid}}>
+            <input type="hidden" name="title" value='{{movie.title}}'>
+            <input type="hidden" name="video-type" value={{movie.vtype}}>
+            <input type="hidden" name="return-page" value={{page}}>
+            <button formaction="/test_picklist/get_watchlist_for_movie" formmethod="POST" class="btn btn-warning">Add to List</button></p>
         {% endif %}
+      </form>
         {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
         <p class="text-center imdb-info"><a href="https://www.imdb.com/title/{{movie.imdbid}}" target="_new">More Info on IMDB</a></p>
         {% endif %}
@@ -44,10 +45,4 @@
 <a href="/search" class="btn btn-danger">New Search</a>
 {% endif %}
 
-<form id="form1"></form>
-
-{% if current_user.is_authenticated %}
-<form id="add-movie" action="/test_picklist/get_watchlist_for_movie" method="POST">
-</form>
-{% endif %}
 {% endblock %}
