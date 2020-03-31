@@ -29,6 +29,10 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
+@app.route('/temp')
+def temp_home():
+    return render_template('newindex.html')
+
 @app.route('/')
 def show_home():
     print(current_user)
