@@ -130,7 +130,8 @@ def edit_user(user_id):
             user = User.query.get(user_id)
             user.username = form.username.data
             user.email = form.email.data
-            db.session.commit()     
+            db.session.commit()
+            flash('Changes successfully made to account','info')
             return redirect('/profile')
 
         return render_template('user/edit.html', user=current_user, form=form)
@@ -273,8 +274,11 @@ def remove_movie_from_watchlist(list_id, movie_id):
         return('you are not authorized to edit this watchlist')
 
     watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
+    movie = SavedMovie.query.get(movie_id)
+    title = movie.title
     db.session.delete(watchlist_entry)
     db.session.commit()
+    flash(f'Removed "{title}" from list','warning')
     return redirect(f'/watchlists/{list_id}')
 
 @app.route('/watchlists/<int:list_id>')
@@ -303,7 +307,8 @@ def new_watchlist():
         )
         db.session.add(watchlist)
         db.session.commit()
-        return redirect(f'/watchlists/{watchlist.id}')
+        flash(f'Watchlist "{watchlist.title}" successfully added','info')
+        return redirect('/my_lists')
     else:
         return render_template('watchlists/watchlist_new.html', form=form)
 
@@ -311,8 +316,10 @@ def new_watchlist():
 @login_required
 def delete_watchlist(list_id):
     watchlist = Watchlist.query.get_or_404(list_id)
+    title = watchlist.title
     db.session.delete(watchlist)
     db.session.commit()
+    flash(f'Watchlist "{title}" deleted','warning')
     return redirect(f'/user/{current_user.id}/watchlists')
 
 @app.route('/watchlists/<int:list_id>/edit', methods=['GET','POST'])
@@ -325,6 +332,7 @@ def edit_watchlist(list_id):
         watchlist.description = form.description.data
         watchlist.is_shared = form.is_shared.data
         db.session.commit()
+        flash('Changes successfully made to watchlist','info')
         return redirect(f'/user/{current_user.id}/watchlists')
     return render_template('watchlists/watchlist_edit.html', form=form)
 
