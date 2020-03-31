@@ -29,8 +29,31 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
-@app.route('/temp')
+@app.route('/temp', methods=['GET','POST'])
 def temp_home():
+    form = MovieSearchForm()
+    if form.validate_on_submit():
+        # save form data to session, send to results page 1
+        # TODO: use session data for loading search page values from last visit
+        session['audio'] = form.audio.data
+        session['subs'] = form.subs.data
+        session['start_year'] = form.year_from.data
+        session['end_year'] = form.year_to.data
+        session['filter_movie'] = form.filter_movie.data
+        session['filter_series'] = form.filter_series.data
+
+        try:
+            data = json.loads(response)
+            movies = data['results']
+            total = data['total']
+        except:
+            movies = None
+        return redirect('/search/results/1')
+
+    else:
+        if 'total' in session:
+            session.pop('total')
+        return render_template('newindex.html', form=form)
     return render_template('newindex.html')
 
 @app.route('/flashme')

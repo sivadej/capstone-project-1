@@ -7,9 +7,9 @@
 			{{form.hidden_tag()}}
 			{% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type != 'checkbox' %}
 			<div class="form-group">
-				{{field.label}} {{field(class_="form-control search-input")}}
+				{{field.label}} {{field(class_="form-control transparent search-input")}}
 			</div>
-			{% endfor %}
+			{% endfor %} <br>
 			{% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type == 'checkbox' %}
 			<div class="checkbox">
 				{{field.label}} {{field}}
@@ -21,21 +21,4 @@
 {% for field in form if field.widget.input_type != 'hidden' %}
 {% for error in field.errors %} {{error}} {%endfor%}
 {% endfor %}
-
-<hr>
-
-<form class="form-inline" action="/action_page.php">
-	<div class="form-group">
-	  <label for="email">Email address:</label>
-	  <input type="email" class="form-control" id="email">
-	</div>
-	<div class="form-group">
-	  <label for="pwd">Password:</label>
-	  <input type="password" class="form-control" id="pwd">
-	</div>
-	<div class="checkbox">
-	  <label><input type="checkbox"> Remember me</label>
-	</div>
-	<button type="submit" class="btn btn-default">Submit</button>
-  </form>
 {% endblock %}
