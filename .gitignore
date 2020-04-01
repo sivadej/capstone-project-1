@@ -1,5 +1,7 @@
 # APP/API CONFIG FILES
 config/
+api_config.py
+app_config.py
 
 # HEROKU
 Procfile
