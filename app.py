@@ -3,7 +3,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
 from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
-from app_config import DB_URI, SECRET_KEY
+from config.app_config import DB_URI, SECRET_KEY
 from sqlalchemy.exc import IntegrityError
 import json
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
