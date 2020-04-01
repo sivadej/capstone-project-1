@@ -12,11 +12,11 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = SECRET_KEY
-#app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
-#debug = DebugToolbarExtension(app)
+debug = DebugToolbarExtension(app)
 
 connect_db(app)
 

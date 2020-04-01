@@ -1,10 +1,20 @@
-api_config.py
-app_config.py
+# APP/API CONFIG FILES
+config/
 
+# HEROKU
+Procfile
+
+# LOCAL SQLITE DB
+unogs_cache.sqlite
+
+# LOCAL WORK FOLDERS
 old_stuff/
+old/
+docs/
 
-.vscode/
+# VIRTUAL ENVIRONMENTS
 venv/
 __pycache__/
 
-unogs_cache.sqlite
+# VSCODE
+.vscode/
