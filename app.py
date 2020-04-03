@@ -15,9 +15,12 @@ import importlib
 dev_config = importlib.util.find_spec('config')
 if dev_config is not None:
     from config.app_config import DB_URI, SECRET_KEY
+    app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
+    app.config['SECRET_KEY'] = SECRET_KEY
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL')
+    app.config['SECRET_KEY'] = environ.get('SECRET_KEY')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = (environ.get('DATABASE_URL', DB_URI))
-app.config['SECRET_KEY'] = (environ.get('SECRET_KEY', SECRET_KEY))
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
