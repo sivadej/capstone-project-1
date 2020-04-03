@@ -1,4 +1,4 @@
-from config.app_config import API_KEY, API_HOST
+from app_config import API_KEY, API_HOST
 import requests
 import json
 from html import unescape
