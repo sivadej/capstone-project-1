@@ -1,9 +1,14 @@
-from app_config import API_KEY, API_HOST
 import requests
 import json
 from html import unescape
 from models import db, SavedMovie
 from os import environ
+
+# set local development config vars if folder exists
+import importlib
+dev_config = importlib.util.find_spec('config')
+if dev_config is not None:
+    from config.app_config import API_HOST, API_KEY
 
 # cache api requests for 24 hours
 import requests_cache
@@ -43,7 +48,7 @@ def get_data(audio, subs, start_year=1900, end_year=2020, offset=0, filter_movie
     # build API request args
     url = f'https://unogsng.p.rapidapi.com/search?end_year={end_year}&audiosubtitle_andor=and&start_year={start_year}&countrylist=78&limit={limit}&offset={offset}&audio={audio}&subtitle={subtitle}{vtype}'
     headers = {
-        'x-rapidapi-host': API_HOST,
+        'x-rapidapi-host': (environ.get('UNOGS_API_HOST', API_HOST)),
         'x-rapidapi-key': (environ.get('UNOGS_API_KEY', API_KEY)),
         }
 
@@ -57,8 +62,8 @@ def get_data(audio, subs, start_year=1900, end_year=2020, offset=0, filter_movie
 def get_movie_detail(netflix_id):
     url = f'https://unogsng.p.rapidapi.com/title?netflixid={netflix_id}'
     headers = {
-        'x-rapidapi-host': API_HOST,
-        'x-rapidapi-key': API_KEY,
+        'x-rapidapi-host': (environ.get('UNOGS_API_HOST', API_HOST)),
+        'x-rapidapi-key': (environ.get('UNOGS_API_KEY', API_KEY)),
         }
 
     try:

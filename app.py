@@ -3,7 +3,6 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
 from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
-from app_config import DB_URI, SECRET_KEY
 from sqlalchemy.exc import IntegrityError
 import json
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
@@ -11,9 +10,15 @@ from os import environ
 
 app = Flask(__name__)
 
+# set local development config vars if folder exists
+import importlib
+dev_config = importlib.util.find_spec('config')
+if dev_config is not None:
+    from config.app_config import DB_URI, SECRET_KEY
+
 app.config['SQLALCHEMY_DATABASE_URI'] = (environ.get('DATABASE_URL', DB_URI))
 app.config['SECRET_KEY'] = (environ.get('SECRET_KEY', SECRET_KEY))
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
