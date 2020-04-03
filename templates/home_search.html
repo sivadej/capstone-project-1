@@ -54,5 +54,14 @@
         </div>
       </div>
    </div>
-
+   <script>
+      btn = document.querySelector('.search-btn');
+      boxes = document.querySelectorAll('.search-checkbox');
+      btn.addEventListener('click',(e)=>{
+        if ((Array.from(boxes).filter(box=>box.checked).length === 0)){
+          e.preventDefault();
+          btn.parentElement.append("Select at least one video type.");
+        }
+      });
+  </script>
 {% endblock %}

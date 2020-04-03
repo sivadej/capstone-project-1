@@ -20,10 +20,6 @@ class MovieSearchForm(FlaskForm):
     filter_movie = BooleanField('Movies', default=True)
     filter_series = BooleanField('Series', default=True)
 
-    # custom validator: at least one of movie/series filters must be checked
-    def check_filters():
-        pass
-
 class NewWatchlistForm(FlaskForm):
     title = StringField('Watchlist Title', validators=[InputRequired()])
     description = StringField('Description')
