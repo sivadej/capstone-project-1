@@ -1,8 +1,9 @@
-from config.api_config import API_KEY, API_HOST
+from config.app_config import API_KEY, API_HOST
 import requests
 import json
 from html import unescape
 from models import db, SavedMovie
+from os import environ
 
 # cache api requests for 24 hours
 import requests_cache
@@ -43,7 +44,7 @@ def get_data(audio, subs, start_year=1900, end_year=2020, offset=0, filter_movie
     url = f'https://unogsng.p.rapidapi.com/search?end_year={end_year}&audiosubtitle_andor=and&start_year={start_year}&countrylist=78&limit={limit}&offset={offset}&audio={audio}&subtitle={subtitle}{vtype}'
     headers = {
         'x-rapidapi-host': API_HOST,
-        'x-rapidapi-key': API_KEY,
+        'x-rapidapi-key': (environ.get('UNOGS_API_KEY', API_KEY)),
         }
 
     try:

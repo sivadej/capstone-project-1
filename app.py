@@ -7,11 +7,12 @@ from config.app_config import DB_URI, SECRET_KEY
 from sqlalchemy.exc import IntegrityError
 import json
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
+from os import environ
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
-app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = (environ.get('DATABASE_URL', DB_URI))
+app.config['SECRET_KEY'] = (environ.get('SECRET_KEY', SECRET_KEY))
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
