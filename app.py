@@ -28,55 +28,6 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
-
-@app.route('/pick_watchlist_from_search')
-def show_picks():
-    form = PickWatchlistForMovieForm()
-    choices = db.session.query(Watchlist.id, Watchlist.title).filter_by(user_id=current_user.id).all()
-    form.watchlist.choices = choices
-    return render_template('watchlists/my_watchlists_dropdown.html', form=form)
-
-@app.route('/watchlist_add_from_search', methods=['POST'])
-def add_movie_to_watchlist_from_search():
-    list_id = int(request.json['watchlistId'])
-    netflix_id = int(request.json['nfid'])
-    title = request.json['title']
-    video_type = request.json['vtype']
-
-    # restrict action to logged in user
-    # authorize current user is owner of current watchlist
-    curr_list = Watchlist.query.get(list_id)
-    if curr_list.user_id != current_user.id or current_user.is_anonymous:
-        return('Unauthorized action.',403)
-
-    movie_entry = get_movie_by_nfid(SavedMovie(
-            netflix_id=netflix_id,
-            title=title,
-            video_type=video_type,
-            ))
-
-    watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=movie_entry.id)
-
-    try:
-        db.session.add(watchlist_entry)
-        db.session.commit()
-    except:
-        db.session.rollback()
-        return ('Movie is already in the selected Watchlist.', 202)
-
-    return ('Added to your Watchlist!', 200)
-
-def get_movie_by_nfid(movie):
-    # return instance of SavedMovie from database if exists
-    # or create new SavedMovie if needed
-    dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == movie.netflix_id).first()
-    if dbmovie is not None:
-        return dbmovie
-    else:
-        db.session.add(movie)
-        db.session.commit()
-        return movie
-    
 ################### USER AUTH/ROUTES ###################
 
 login_manager = LoginManager()
@@ -94,7 +45,6 @@ def logout():
     logout_user()
     flash('Logged out.','info')
     return redirect('/')
-
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -227,63 +177,54 @@ def get_next_search_page(page_num):
 
 ################### WATCHLIST ROUTES ###################
 
-@app.route('/watchlists/<int:list_id>/insert_movie')
-def add_movie_to_watchlist(list_id):
+@app.route('/pick_watchlist_from_search')
+def show_picks():
+    # render dropdown of user watchlists. expecting to use for ajax modal, return html template without base
+    form = PickWatchlistForMovieForm()
+    choices = db.session.query(Watchlist.id, Watchlist.title).filter_by(user_id=current_user.id).all()
+    form.watchlist.choices = choices
+    return render_template('watchlists/my_watchlists_dropdown.html', form=form)
+
+@app.route('/watchlist_add_from_search', methods=['POST'])
+def add_movie_to_watchlist_from_search():
+    list_id = int(request.json['watchlistId'])
+    netflix_id = int(request.json['nfid'])
+    title = request.json['title']
+    video_type = request.json['vtype']
 
     # restrict action to logged in user
     # authorize current user is owner of current watchlist
     curr_list = Watchlist.query.get(list_id)
     if curr_list.user_id != current_user.id or current_user.is_anonymous:
-        return('',403)
-    
-    # check if movie exists in db. if not, add it and set dbmovie to new entry reference
-    dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == session['netflix_id']).first()
-    if dbmovie is None:
-        new_movie = SavedMovie(
-            netflix_id=session['netflix_id'],
-            title=session['title'],
-            video_type=session['video_type'],
-            )
-        db.session.add(new_movie)
-        db.session.commit()
-        dbmovie = new_movie
+        return('Unauthorized action.',403)
 
-    return_page = session['return_page']
-    clear_movie_session()
+    movie_entry = get_movie_by_nfid(SavedMovie(
+            netflix_id=netflix_id,
+            title=title,
+            video_type=video_type,
+            ))
 
-    # retrieve newly returned saved_movie.id and add entry to watchlist_movie.id
-    watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=dbmovie.id)
-    
+    watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=movie_entry.id)
+
     try:
         db.session.add(watchlist_entry)
         db.session.commit()
     except:
         db.session.rollback()
-        flash('Movie already exists in the selected list.','warning')
-        return redirect(f'/search/results/{return_page}')
+        return ('Movie is already in the selected Watchlist.', 202)
 
-    flash('Added to your watchlist!','info')
-    return redirect(f'/search/results/{return_page}')
+    return ('Added to your Watchlist!', 200)
 
-@app.route('/test_picklist/get_watchlist_for_movie', methods=['GET','POST'])
-@login_required
-def pick_watchlist():
-    form = PickWatchlistForMovieForm()
-    choices = db.session.query(Watchlist.id, Watchlist.title).filter_by(user_id=current_user.id).all()
-    form.watchlist.choices = choices
-
-    # POST: return selected watchlist_id
-    if form.validate_on_submit():
-        return redirect(f'/watchlists/{form.watchlist.data}/insert_movie')
-
-    # GET:
-    # return list of user-owned watchlists for dropdown display on template
-    session['netflix_id'] = request.form['netflix-id']
-    session['title'] = request.form['title']
-    session['video_type'] = request.form['video-type']
-    session['return_page'] = request.form['return-page']
-    return render_template('watchlists/pick_watchlist.html', form=form)
-
+def get_movie_by_nfid(movie):
+    # return instance of SavedMovie from database if exists
+    # or create new SavedMovie if needed
+    dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == movie.netflix_id).first()
+    if dbmovie is not None:
+        return dbmovie
+    else:
+        db.session.add(movie)
+        db.session.commit()
+        return movie
 
 @app.route('/watchlists/<int:list_id>/remove_movie/<int:movie_id>', methods=['POST'])
 def remove_movie_from_watchlist(list_id, movie_id):
@@ -357,7 +298,6 @@ def edit_watchlist(list_id):
     else:
         return('',403)
 
-
 @app.route('/watchlists')
 def shared_watchlists():
     watchlists = Watchlist.query.filter_by(is_shared=True).all()
@@ -384,9 +324,3 @@ def show_movie_details(id):
     dbmovie = SavedMovie.query.get_or_404(id)
     movie = get_movie_detail(dbmovie.netflix_id)
     return render_template('movie/movie_details.html', movie=movie)
-
-def clear_movie_session():
-    # clean up browser session containing selected movie details
-    session.pop('netflix_id', None)
-    session.pop('title', None)
-    session.pop('video_type', None)
