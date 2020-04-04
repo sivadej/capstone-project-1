@@ -18,13 +18,13 @@ if dev_config is not None:
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ECHO'] = True
-    debug = DebugToolbarExtension(app)
 else:
     DB_URI = environ.get('DATABASE_URL')
     SECRET_KEY = environ.get('SECRET_KEY')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config['SECRET_KEY'] = SECRET_KEY
+debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -41,43 +41,6 @@ def load_user(user_id):
 def redirect_to_search():
     return redirect(url_for('show_search'))
 
-@app.route('/flashme')
-def flashme():
-    flash('redirected to search','warning')
-    return redirect('/')
-
-@app.route('/temp/search', methods=['GET','POST'])
-def temp_search():
-    form = MovieSearchForm()
-    if form.validate_on_submit():
-        # save form data to session, send to results page 1
-        # TODO: use session data for loading search page values from last visit
-        session['audio'] = form.audio.data
-        session['subs'] = form.subs.data
-        session['start_year'] = form.year_from.data
-        session['end_year'] = form.year_to.data
-        session['filter_movie'] = form.filter_movie.data
-        session['filter_series'] = form.filter_series.data
-
-        try:
-            data = json.loads(response)
-            movies = data['results']
-            total = data['total']
-        except:
-            movies = None
-        return redirect('/search/results/1')
-
-    else:
-        if 'total' in session:
-            session.pop('total')
-        return render_template('temp/temp_search.html', form=form)
-    return render_template('temp/temp_search.html')
-
-#@app.route('/')
-#def show_home():
-#    print(current_user)
-#    return render_template('hello.html')
-
 @app.route('/logout')
 def logout():
     logout_user()
@@ -88,7 +51,6 @@ def logout():
 @login_required
 def redirect_to_user_watchlists():
     return redirect(f'/user/{current_user.id}/watchlists')
-
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -105,8 +67,6 @@ def login():
             login_user(user, remember=form.remember.data)
             flash('Successfully logged in. Welcome back!','success')
             return redirect('/profile')
-    #if form.is_submitted():
-    #    flash('Error logging in.','warning')
     return render_template('user/login.html', form=form)
 
 @app.route('/register', methods=['GET','POST'])
@@ -203,7 +163,7 @@ def get_next_search_page(page_num):
             offset = ((page_num-1)*12),
             )
     movies = json.loads(response)
-    # store total results found because it is only returned by API when offset == 0
+    # store total results found because it is only available on page 1 of request
     if page_num == 1:
         session['total'] = movies['total']
     
