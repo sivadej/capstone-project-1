@@ -25,6 +25,7 @@
             <input type="hidden" name="return-page" value={{page}}>
             <button formaction="/test_picklist/get_watchlist_for_movie" formmethod="POST" class="btn btn-warning">Add to List</button></p>
         {% endif %}
+        <button type="button" class="btn btn-info btn-lg add-to-list-btn" data-toggle="modal" data-target="#main-modal">Open Modal</button>
       </form>
         {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
         <p class="text-center imdb-info"><a href="https://www.imdb.com/title/{{movie.imdbid}}" target="_new">More Info on IMDB</a></p>
@@ -45,4 +46,25 @@
 <a href="/search" class="btn btn-danger">New Search</a>
 {% endif %}
 
+<!-- Modal -->
+<div id="main-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Modal Header</h4>
+      </div>
+      <div id="main-modal-body" class="modal-body">
+        <p>Loading...</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="/static/js/searchresult_to_watchlist.js" type="text/javascript"></script>
 {% endblock %}

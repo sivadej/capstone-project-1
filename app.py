@@ -28,6 +28,16 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
+########## TESTING, DELETE THESE ROUTES LATER ######
+
+@app.route('/pick')
+def show_picks():
+    form = PickWatchlistForMovieForm()
+    choices = db.session.query(Watchlist.id, Watchlist.title).filter_by(user_id=current_user.id).all()
+    form.watchlist.choices = choices
+    return render_template('watchlists/temp_dropdown.html', form=form)
+
+
 ################### USER AUTH/ROUTES ###################
 
 login_manager = LoginManager()

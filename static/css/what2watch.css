@@ -191,6 +191,10 @@ h2,h3,h4,h5,h6 {
       
   }
 
+  .modal-content{
+      background-color: rgb(54, 54, 54);
+  }
+
 @media (max-width: 768px){
     .home-search-input {
         width: 100%;

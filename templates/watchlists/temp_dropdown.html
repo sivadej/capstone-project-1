@@ -1,0 +1,26 @@
+  <div class="text-center">
+    <h3>Choose A Watchlist</h3>
+    <p>Or <a href="/watchlists/new">create a new one</a>.</p>
+    <form class="form-horizontal" method="POST">
+        {{form.hidden_tag()}}
+        {% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type != 'checkbox' %}
+        <div class="form-group">
+            <div class="col-sm-8 col-sm-offset-2">{{field(class_="form-control")}}</div>
+        </div>
+        {% endfor %}
+        {% for field in form if field.widget.input_type != 'hidden' and field.widget.input_type == 'checkbox' %}
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+                <div class="checkbox">
+                    {{field.label}} {{field}}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+      <div class="form-group">        
+        <div class="col-sm-6 col-sm-offset-3">
+          <button type="submit" class="btn btn-danger btn-block">Select</button>
+        </div>
+      </div>
+    </form>
+  </div>
