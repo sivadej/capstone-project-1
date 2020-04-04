@@ -19,7 +19,7 @@
 				<p class="movie-synopsis">{{movie.synopsis}}</p>
 				<p class="text-center"><form class="text-center"><a href="https://www.netflix.com/watch/{{movie.nfid}}" class="btn btn-danger">Watch on Netflix</a>
         {% if current_user.is_authenticated %}
-        <button type="button" class="btn btn-info btn-lg add-to-list-btn" data-toggle="modal" data-target="#main-modal" data-title='{{movie.title}}' data-vtype='{{movie.vtype}}' data-nfid={{movie.nfid}}>Open Modal</button>
+        <button type="button" class="btn btn-warning add-to-list-btn" data-toggle="modal" data-target="#main-modal" data-title='{{movie.title}}' data-vtype='{{movie.vtype}}' data-nfid={{movie.nfid}}>Add to List</button>
         {% endif %}
       </form>
         {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
@@ -49,7 +49,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Pick A Watchlist</h4>
+        
       </div>
       <div id="main-modal-body" class="modal-body">
         <p>Loading...</p>
