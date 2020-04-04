@@ -19,11 +19,7 @@
 				<p class="movie-synopsis">{{movie.synopsis}}</p>
 				<p class="text-center"><form class="text-center"><a href="https://www.netflix.com/watch/{{movie.nfid}}" class="btn btn-danger">Watch on Netflix</a>
         {% if current_user.is_authenticated %}
-            <input type="hidden" name="netflix-id" value={{movie.nfid}}>
-            <input type="hidden" name="title" value='{{movie.title}}'>
-            <input type="hidden" name="video-type" value={{movie.vtype}}>
-            <input type="hidden" name="return-page" value={{page}}>
-            <button formaction="/test_picklist/get_watchlist_for_movie" formmethod="POST" class="btn btn-warning">Add to List</button></p>
+        <button type="button" class="btn btn-warning add-to-list-btn" data-toggle="modal" data-target="#main-modal" data-title='{{movie.title}}' data-vtype='{{movie.vtype}}' data-nfid={{movie.nfid}}>Add to List</button>
         {% endif %}
       </form>
         {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
@@ -45,4 +41,26 @@
 <a href="/search" class="btn btn-danger">New Search</a>
 {% endif %}
 
+<!-- Modal -->
+<div id="main-modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        
+      </div>
+      <div id="main-modal-body" class="modal-body">
+        <p>Loading...</p>
+      </div>
+      <div id="main-modal-message" class="text-center"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="/static/js/searchresult_to_watchlist.js" type="text/javascript"></script>
 {% endblock %}
