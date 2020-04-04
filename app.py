@@ -28,11 +28,10 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
-################### USER AUTH ###################
+################### USER AUTH/ROUTES ###################
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -47,10 +46,6 @@ def logout():
     flash('Logged out.','info')
     return redirect('/')
 
-@app.route('/my_lists')
-@login_required
-def redirect_to_user_watchlists():
-    return redirect(f'/user/{current_user.id}/watchlists')
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -120,7 +115,6 @@ def delete_user(user_id):
         return redirect('/logout')
     else:
         return('',403)
-
 
 
 ################### SEARCH ROUTES ###################
@@ -206,12 +200,8 @@ def add_movie_to_watchlist(list_id):
         dbmovie = new_movie
 
     return_page = session['return_page']
+    clear_movie_session()
 
-    # clean up session
-    session.pop('netflix_id', None)
-    session.pop('title', None)
-    session.pop('video_type', None)
-    
     # retrieve newly returned saved_movie.id and add entry to watchlist_movie.id
     watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=dbmovie.id)
     
@@ -225,8 +215,6 @@ def add_movie_to_watchlist(list_id):
 
     flash('Added to your watchlist!','info')
     return redirect(f'/search/results/{return_page}')
-
-######
 
 @app.route('/test_picklist/get_watchlist_for_movie', methods=['GET','POST'])
 @login_required
@@ -334,10 +322,11 @@ def user_watchlists(user_id):
         return render_template('user/my_watchlists.html', watchlists=watchlists)
     else:
         return('',403)
-    
-@app.route('/user/new')
-def redirect_to_register():
-    return redirect(url_for('register'))
+
+@app.route('/my_lists')
+@login_required
+def redirect_to_user_watchlists():
+    return redirect(f'/user/{current_user.id}/watchlists')
 
 ################### MOVIE ROUTES #######################
 
@@ -347,4 +336,8 @@ def show_movie_details(id):
     movie = get_movie_detail(dbmovie.netflix_id)
     return render_template('movie/movie_details.html', movie=movie)
 
-################### HELPERS #######################
+def clear_movie_session():
+    # clean up browser session containing selected movie details
+    session.pop('netflix_id', None)
+    session.pop('title', None)
+    session.pop('video_type', None)
