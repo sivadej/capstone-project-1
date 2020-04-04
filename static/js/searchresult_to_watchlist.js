@@ -1,8 +1,5 @@
-console.log('search result to watchlist init');
-const btns = document.querySelectorAll('.add-to-list-btn');
-
-
 let movieWatchlistObj = {};
+const btns = document.querySelectorAll('.add-to-list-btn');
 btns.forEach(btn=>{
 	btn.addEventListener('click',e=>{
 		e.preventDefault();
@@ -23,28 +20,25 @@ async function getWatchlistSelector(){
 	} catch {
 		renderHtmlToModal('an error occurred', 'main-modal-body');
 	}
-
 	watchlistSelectBtn = document.getElementById('submit-watchlist-pick');
-	console.log(watchlistSelectBtn);
 	watchlistSelectBtn.addEventListener('click',async e=>{
 		e.preventDefault();
 		const watchlistDropdown = document.getElementById('watchlist');
 		movieWatchlistObj.watchlistId = watchlistDropdown.value;
-		console.log(movieWatchlistObj.watchlistId);
 		try {
 			resp = await axios.post('/watchlist_add_from_search', movieWatchlistObj);
-			console.log(resp)
-			if (resp.status === 200)
-				renderHtmlToModal(resp.data,'main-modal-body')
+			if (resp.status === 200) {
+				renderHtmlToModal('','main-modal-body');
+				renderHtmlToModal(resp.data,'main-modal-message');
+			}
 			else if (resp.status === 202)
-				renderHtmlToModal(resp.data,'main-modal-message')
+				renderHtmlToModal(resp.data,'main-modal-message');
 			else {
 				throw "unrecognized response";
 			}
 		} catch {
 			appendHtmlToModal('error','main-modal-body')
 		}
-		
 	})
 }
 

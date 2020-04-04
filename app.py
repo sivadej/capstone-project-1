@@ -38,8 +38,8 @@ def show_picks():
 
 @app.route('/watchlist_add_from_search', methods=['POST'])
 def add_movie_to_watchlist_from_search():
-    list_id = request.json['watchlistId']
-    netflix_id = request.json['nfid']
+    list_id = int(request.json['watchlistId'])
+    netflix_id = int(request.json['nfid'])
     title = request.json['title']
     video_type = request.json['vtype']
 
@@ -49,12 +49,14 @@ def add_movie_to_watchlist_from_search():
     if curr_list.user_id != current_user.id or current_user.is_anonymous:
         return('Unauthorized action.',403)
 
-    movie_entry = save_movie_by_nfid(SavedMovie(
+    movie_entry = get_movie_by_nfid(SavedMovie(
             netflix_id=netflix_id,
             title=title,
             video_type=video_type,
             ))
+
     watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=movie_entry.id)
+
     try:
         db.session.add(watchlist_entry)
         db.session.commit()
@@ -64,15 +66,16 @@ def add_movie_to_watchlist_from_search():
 
     return ('Added to your Watchlist!', 200)
 
-def save_movie_by_nfid(movie):
+def get_movie_by_nfid(movie):
     # return instance of SavedMovie from database if exists
     # or create new SavedMovie if needed
     dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == movie.netflix_id).first()
-    if dbmovie is None:
+    if dbmovie is not None:
+        return dbmovie
+    else:
         db.session.add(movie)
         db.session.commit()
-    dbmovie = movie
-    return dbmovie
+        return movie
     
 ################### USER AUTH/ROUTES ###################
 
