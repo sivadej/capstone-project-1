@@ -28,16 +28,52 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
-########## TESTING, DELETE THESE ROUTES LATER ######
 
-@app.route('/pick')
+@app.route('/pick_watchlist_from_search')
 def show_picks():
     form = PickWatchlistForMovieForm()
     choices = db.session.query(Watchlist.id, Watchlist.title).filter_by(user_id=current_user.id).all()
     form.watchlist.choices = choices
-    return render_template('watchlists/temp_dropdown.html', form=form)
+    return render_template('watchlists/my_watchlists_dropdown.html', form=form)
 
+@app.route('/watchlist_add_from_search', methods=['POST'])
+def add_movie_to_watchlist_from_search():
+    list_id = request.json['watchlistId']
+    netflix_id = request.json['nfid']
+    title = request.json['title']
+    video_type = request.json['vtype']
 
+    # restrict action to logged in user
+    # authorize current user is owner of current watchlist
+    curr_list = Watchlist.query.get(list_id)
+    if curr_list.user_id != current_user.id or current_user.is_anonymous:
+        return('Unauthorized action.',403)
+
+    movie_entry = save_movie_by_nfid(SavedMovie(
+            netflix_id=netflix_id,
+            title=title,
+            video_type=video_type,
+            ))
+    watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=movie_entry.id)
+    try:
+        db.session.add(watchlist_entry)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return ('Movie is already in the selected Watchlist.', 202)
+
+    return ('Added to your Watchlist!', 200)
+
+def save_movie_by_nfid(movie):
+    # return instance of SavedMovie from database if exists
+    # or create new SavedMovie if needed
+    dbmovie = SavedMovie.query.filter(SavedMovie.netflix_id == movie.netflix_id).first()
+    if dbmovie is None:
+        db.session.add(movie)
+        db.session.commit()
+    dbmovie = movie
+    return dbmovie
+    
 ################### USER AUTH/ROUTES ###################
 
 login_manager = LoginManager()
