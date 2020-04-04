@@ -78,8 +78,17 @@ def register():
             flash('Username taken.','warning')
             return render_template('user/register.html', form=form)
         login_user(user)
+        create_list_for_new_user(user)
         return redirect('/')
     return render_template('user/register.html', form=form)
+
+@login_required
+def create_list_for_new_user(user):
+    # create a private list for newly registered user
+    title = f"{user.username}'s Watchlist"
+    new_list = Watchlist(title=title, is_shared=False, user_id=user.id)
+    db.session.add(new_list)
+    db.session.commit()
 
 @app.route('/profile', methods=['GET'])
 @login_required
