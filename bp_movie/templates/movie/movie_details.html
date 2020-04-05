@@ -1,0 +1,21 @@
+{% extends '_base.html' %}
+{% block title %}Details: {{movie.title}}{% endblock %}
+{% block body %}
+<h1 class="text-center">{{movie.title}}</h1>
+<div class="row movie-container">
+<div class="col-sm-12">
+  <div class="card">
+    <img src="{{movie.image_url}}" class="card-img">
+    <div class="card-container">
+      <p class="video-type">{{movie.video_type}}</p>
+      <h5>{{movie.synopsis}}</h5>
+      <p class="text-center"><a href="https://www.netflix.com/watch/{{movie.netflix_id}}" class="btn btn-danger">Watch on Netflix</a></p>
+      {% if (movie.imdbid != "notfound") and (movie.imdbid) %}
+      <p class="text-center imdb-info"><a href="https://www.imdb.com/title/{{movie.imdbid}}" target="_new">More Info on IMDB</a></p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</div>
+
+{% endblock %}

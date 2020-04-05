@@ -341,8 +341,3 @@ def redirect_to_user_watchlists():
 
 ################### MOVIE ROUTES #######################
 
-@app.route('/movie/<int:id>')
-def show_movie_details(id):
-    dbmovie = SavedMovie.query.get_or_404(id)
-    movie = get_movie_detail(dbmovie.netflix_id)
-    return render_template('movie/movie_details.html', movie=movie)
