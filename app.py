@@ -8,18 +8,18 @@ import json
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 from os import environ
 
-from bp_api import bp_api
-from bp_movie import bp_movie
-from bp_search import bp_search
-from bp_users import bp_users
-from bp_watchlists import bp_watchlists
+from bp_api.api_requests import bp_api
+from bp_movie.movie import bp_movie
+from bp_search.search import bp_search
+from bp_users.users import bp_users
+from bp_watchlists.watchlists import bp_watchlists
 
 app = Flask(__name__)
 
 app.register_blueprint(bp_users)
 app.register_blueprint(bp_search)
 app.register_blueprint(bp_watchlists)
-app.register_blueprint(bp_movies)
+app.register_blueprint(bp_movie)
 app.register_blueprint(bp_api)
 
 # use local development config vars if folder exists, otherwise use environment vars
