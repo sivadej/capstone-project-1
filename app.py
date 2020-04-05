@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, flash, session, url_for
+from flask import Flask, request, render_template, redirect, flash, session, url_for, Blueprint
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api_requests import get_data, get_movie_detail
@@ -8,9 +8,22 @@ import json
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 from os import environ
 
+from bp_api import bp_api
+from bp_movie import bp_movie
+from bp_search import bp_search
+from bp_users import bp_users
+from bp_watchlists import bp_watchlists
+
 app = Flask(__name__)
 
+app.register_blueprint(bp_users)
+app.register_blueprint(bp_search)
+app.register_blueprint(bp_watchlists)
+app.register_blueprint(bp_movies)
+app.register_blueprint(bp_api)
+
 # use local development config vars if folder exists, otherwise use environment vars
+# '/config' folder should never be tracked in source control!
 import importlib
 dev_config = importlib.util.find_spec('config')
 if dev_config is not None:
