@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
-from api_requests import get_data, get_movie_detail
+from api.api_requests import get_data, get_movie_detail
 
 bp_movie = Blueprint('bp_movie', __name__,
     template_folder='templates',

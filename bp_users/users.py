@@ -1,9 +1,7 @@
-from flask import Blueprint
-
 from flask import Flask, request, render_template, redirect, flash, session, url_for, Blueprint
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
-from api_requests import get_data, get_movie_detail
+from api.api_requests import get_data, get_movie_detail
 from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
 from sqlalchemy.exc import IntegrityError
 import json
