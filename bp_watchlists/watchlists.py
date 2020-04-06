@@ -1,16 +1,11 @@
-from flask import Flask, request, render_template, redirect, flash, session, url_for, Blueprint
+from flask import Flask, request, render_template, redirect, flash, session, Blueprint
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
-from api.api_requests import get_data, get_movie_detail
-from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
-from sqlalchemy.exc import IntegrityError
+from models import db, User, Watchlist, SavedMovie, Watchlist_Movie
+from forms import NewWatchlistForm, EditWatchlistForm, PickWatchlistForMovieForm
 import json
-from flask_login import LoginManager, login_required, login_user, current_user, logout_user
-from os import environ
+from flask_login import login_required, current_user
 
-bp_watchlists = Blueprint('bp_watchlists', __name__,
-    template_folder='templates',
-    static_folder='static')
+bp_watchlists = Blueprint('bp_watchlists', __name__, template_folder='templates', static_folder='static')
 
 
 ################ WATCHLIST HELPER FUNCTIONS #############
@@ -25,6 +20,14 @@ def get_movie_by_nfid(movie):
         db.session.add(movie)
         db.session.commit()
         return movie
+    
+def current_user_is_list_owner(list_id):
+    # authorize current user is owner of current watchlist
+    curr_list = Watchlist.query.get(list_id)
+    if curr_list.user_id != current_user.id or current_user.is_anonymous:
+        return('Unauthorized action.',403)
+    else:
+        return True
 
 ################### WATCHLIST ROUTES ###################
 
@@ -35,7 +38,7 @@ def shared_watchlists():
 
 @bp_watchlists.route('/pick_watchlist_from_search')
 def show_picks():
-    # render dropdown of user watchlists. expecting to use for ajax modal, return html template without base
+    # render dropdown of user watchlists. uses HTML template without base
     form = PickWatchlistForMovieForm()
     choices = db.session.query(Watchlist.id, Watchlist.title).filter_by(user_id=current_user.id).all()
     form.watchlist.choices = choices
@@ -48,45 +51,32 @@ def add_movie_to_watchlist_from_search():
     title = request.json['title']
     video_type = request.json['vtype']
 
-    # restrict action to logged in user
-    # authorize current user is owner of current watchlist
-    curr_list = Watchlist.query.get(list_id)
-    if curr_list.user_id != current_user.id or current_user.is_anonymous:
-        return('Unauthorized action.',403)
-
-    movie_entry = get_movie_by_nfid(SavedMovie(
-            netflix_id=netflix_id,
-            title=title,
-            video_type=video_type,
-            ))
-
-    watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=movie_entry.id)
-
-    try:
-        db.session.add(watchlist_entry)
-        db.session.commit()
-    except:
-        db.session.rollback()
-        return ('Movie is already in the selected Watchlist.', 202)
-
-    return ('Added to your Watchlist!', 200)
+    if current_user_is_list_owner(list_id):
+        movie_entry = get_movie_by_nfid(SavedMovie(
+                netflix_id=netflix_id,
+                title=title,
+                video_type=video_type,
+                ))
+        watchlist_entry = Watchlist_Movie(watchlist_id=list_id, movie_id=movie_entry.id)
+        try:
+            db.session.add(watchlist_entry)
+            db.session.commit()
+        except:
+            db.session.rollback()
+            return ('Movie is already in the selected Watchlist.', 202)
+            
+        return ('Added to your Watchlist!', 200)
 
 @bp_watchlists.route('/watchlists/<int:list_id>/remove_movie/<int:movie_id>', methods=['POST'])
 def remove_movie_from_watchlist(list_id, movie_id):
-
-    # restrict action to logged in user
-    # authorize current user is owner of current watchlist
-    curr_list = Watchlist.query.get(list_id)
-    if curr_list.user_id != current_user.id or current_user.is_anonymous:
-        return('',403)
-
-    watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
-    movie = SavedMovie.query.get(movie_id)
-    title = movie.title
-    db.session.delete(watchlist_entry)
-    db.session.commit()
-    flash(f'Removed "{title}" from list','warning')
-    return redirect(f'/watchlists/{list_id}')
+    if current_user_is_list_owner(list_id):
+        watchlist_entry = Watchlist_Movie.query.filter_by(watchlist_id=list_id, movie_id=movie_id).first()
+        movie = SavedMovie.query.get(movie_id)
+        title = movie.title
+        db.session.delete(watchlist_entry)
+        db.session.commit()
+        flash(f'Removed "{title}" from list','warning')
+        return redirect(f'/watchlists/{list_id}')
 
 @bp_watchlists.route('/watchlists/<int:list_id>')
 def show_watchlist_detail(list_id):

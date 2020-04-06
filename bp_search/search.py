@@ -1,31 +1,24 @@
-from flask import Flask, request, render_template, redirect, flash, session, url_for, Blueprint
+from flask import Flask, request, render_template, redirect, flash, session, Blueprint
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
-from api.api_requests import get_data, get_movie_detail
-from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
-from sqlalchemy.exc import IntegrityError
+from models import db, User, Watchlist
+from api.api_requests import get_data
+from forms import MovieSearchForm
 import json
-from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 from os import environ
 
-bp_search = Blueprint('bp_search', __name__,
-    template_folder='templates',
-    static_folder='static')
-
+bp_search = Blueprint('bp_search', __name__, template_folder='templates', static_folder='static')
 
 @bp_search.route('/search', methods=['GET', 'POST'])
 def show_search():
     form = MovieSearchForm()
     if form.validate_on_submit():
         # save form data to session, send to results page 1
-        # TODO: use session data for loading search page values from last visit
         session['audio'] = form.audio.data
         session['subs'] = form.subs.data
         session['start_year'] = form.year_from.data
         session['end_year'] = form.year_to.data
         session['filter_movie'] = form.filter_movie.data
         session['filter_series'] = form.filter_series.data
-
         try:
             data = json.loads(response)
             movies = data['results']
@@ -33,7 +26,6 @@ def show_search():
         except:
             movies = None
         return redirect('/search/results/1')
-
     else:
         if 'total' in session:
             session.pop('total')
@@ -41,6 +33,7 @@ def show_search():
 
 @bp_search.route('/search/results/<int:page_num>')
 def get_next_search_page(page_num):
+    results_per_page = 12
     response = get_data(
             audio = session['audio'],
             subs = session['subs'],
@@ -48,7 +41,7 @@ def get_next_search_page(page_num):
             end_year = session['end_year'],
             filter_movie = session['filter_movie'],
             filter_series = session['filter_series'],
-            offset = ((page_num-1)*12),
+            offset = ((page_num-1)*results_per_page),
             )
     movies = json.loads(response)
     # store total results found because it is only available on page 1 of request
@@ -66,6 +59,6 @@ def get_next_search_page(page_num):
             subs=session['subs'],
             page=page_num,
             next_page=(page_num+1),
-            result_start=(((page_num-1)*12)+1),
-            result_end=(page_num*12),
+            result_start=(((page_num-1)*results_per_page)+1),
+            result_end=(page_num*results_per_page),
             )

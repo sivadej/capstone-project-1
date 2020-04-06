@@ -1,16 +1,21 @@
-from flask import Flask, request, render_template, redirect, flash, session, url_for, Blueprint
+from flask import Flask, render_template, redirect, flash, session, Blueprint
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Watchlist, SavedMovie, Watchlist_Movie
+from models import db, User, Watchlist, SavedMovie, Watchlist_Movie
 from api.api_requests import get_data, get_movie_detail
-from forms import MovieSearchForm, LoginForm, RegisterForm, NewWatchlistForm, EditWatchlistForm, EditUserForm, PickWatchlistForMovieForm
+from forms import LoginForm, RegisterForm, EditUserForm
 from sqlalchemy.exc import IntegrityError
-import json
-from flask_login import LoginManager, login_required, login_user, current_user, logout_user
-from os import environ
+from flask_login import login_required, login_user, current_user, logout_user
 
-bp_users= Blueprint('bp_users', __name__,
-    template_folder='templates',
-    static_folder='static')
+bp_users= Blueprint('bp_users', __name__, template_folder='templates', static_folder='static')
+
+
+@login_required
+def create_list_for_new_user(user):
+    # create a private list for newly registered user
+    title = f"{user.username}'s Watchlist"
+    new_list = Watchlist(title=title, is_shared=False, user_id=user.id)
+    db.session.add(new_list)
+    db.session.commit()
 
 @bp_users.route('/logout')
 def logout():
@@ -53,14 +58,6 @@ def register():
         create_list_for_new_user(user)
         return redirect('/')
     return render_template('user/register.html', form=form)
-
-@login_required
-def create_list_for_new_user(user):
-    # create a private list for newly registered user
-    title = f"{user.username}'s Watchlist"
-    new_list = Watchlist(title=title, is_shared=False, user_id=user.id)
-    db.session.add(new_list)
-    db.session.commit()
 
 @bp_users.route('/profile', methods=['GET'])
 @login_required
