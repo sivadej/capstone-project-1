@@ -4,6 +4,12 @@ from html import unescape
 from models import db, SavedMovie
 from os import environ
 
+from flask import Blueprint, render_template
+
+bp_api = Blueprint('bp_api', __name__,
+    template_folder='templates',
+    static_folder='static')
+
 # set local development config vars if folder exists
 import importlib
 dev_config = importlib.util.find_spec('config')
