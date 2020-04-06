@@ -1,6 +1,6 @@
 from flask import Flask, redirect, session, url_for, Blueprint
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, User
+from models import db, connect_db, User
 from flask_login import LoginManager, current_user
 from os import environ
 
