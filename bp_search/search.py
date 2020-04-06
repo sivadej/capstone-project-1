@@ -41,6 +41,7 @@ def get_next_search_page(page_num):
             end_year = session['end_year'],
             filter_movie = session['filter_movie'],
             filter_series = session['filter_series'],
+            results_per_page = results_per_page,
             offset = ((page_num-1)*results_per_page),
             )
     movies = json.loads(response)

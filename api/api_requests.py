@@ -16,10 +16,10 @@ else:
 # cache api requests for 24 hours
 requests_cache.install_cache(cache_name='unogs_cache', backend='sqlite', expire_after=86400)
 
-def get_data(audio, subs, start_year=1900, end_year=2020, offset=0, filter_movie=True, filter_series=True):
+def get_data(audio, subs, start_year=1900, end_year=2020, offset=0, filter_movie=True, filter_series=True, results_per_page=12):
     end_year = end_year
     start_year = start_year
-    limit = 12
+    limit = results_per_page
     offset = offset
     audio = audio
     subtitle = subs
