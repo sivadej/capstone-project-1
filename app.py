@@ -27,7 +27,7 @@ if dev_config is not None:
     from config.app_config import DB_URI, SECRET_KEY
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ECHO'] = True
+    app.config['SQLALCHEMY_ECHO'] = False
 else:
     DB_URI = environ.get('DATABASE_URL')
     SECRET_KEY = environ.get('SECRET_KEY')
