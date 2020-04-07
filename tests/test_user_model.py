@@ -34,8 +34,6 @@ class UserModelTests(TestCase):
 
         db.session.commit()
 
-        self.client = app.test_client()
-
     def tearDown(self):
         resp = super().tearDown()
         db.session.rollback()
@@ -74,6 +72,14 @@ class UserModelTests(TestCase):
         with self.assertRaises(ValueError) as context:
             invalid = User.register('Test2020','email@email.net',None)
             db.session.commit()
+    
+    def test_user_auth(self):
+        u = User.register('authMePlease','email@gmail.cn','Hello123!@#')
+        db.session.commit()
+        should_auth = User.authenticate('authMePlease','Hello123!@#')
+        failed_auth = User.authenticate('authMePlease','WrongpasswordKiddo')
+        self.assertEqual(should_auth, u)
+        self.assertFalse(failed_auth)
     
     def test_user_watchlists(self):
         # test watchlist relationship in user model
