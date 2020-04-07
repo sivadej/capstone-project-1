@@ -10,7 +10,7 @@ Search results link titles directly to their Netflix URLs for quick accesss, and
 Data is pulled from the [Unofficial Netflix Global Search API](https://rapidapi.com/unogs/api/unogsng/details). Results are currently restricted to the US Netflix catalog. 
 
 ## Demo
-Live demo deployed to http://what2watch-v01.herokuapp.com/
+**Live demo deployed to http://what2watch-v01.herokuapp.com/.**
 
 ![alt demo](https://github.com/sivadej/what-2-watch/blob/master/w2w_demo-min.gif?raw=true)
 
@@ -25,14 +25,10 @@ Live demo deployed to http://what2watch-v01.herokuapp.com/
 - Git
 - Insomnia
 
-
-
-
-
 ## Installation
 In order to get this project up and running on your local machine, you will need to set up the virtual environment in Python, create the Postgres database, and obtain API credentials from [UNoGS](https://rapidapi.com/unogs/api/unogsng/details).
 
-#### Requirements
+### Requirements
 - Flask 1.0.2
   - Flask-BCrypt 0.7.1
   - Flask-Login 0.5.0
