@@ -28,7 +28,6 @@ class UserModelTests(TestCase):
         return resp
 
     def test_user_model(self):
-        print('******************************TEST USER MODEL *********')
         u = User(username='plaintextTest',email='test@test.com',password='password123')
         self.assertEqual(u.username,'plaintextTest')
         self.assertEqual(u.email,'test@test.com')
@@ -36,7 +35,6 @@ class UserModelTests(TestCase):
         self.assertIsNone(u.id)
 
     def test_valid_registration(self):
-        print('******************************TEST USER REG *********')
         # test for proper db insertion and bcrypt hash password
         # test for plaintext password NOT stored in db
         u = User.register('test123','test@test.com','password123')
