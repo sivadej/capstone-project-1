@@ -79,7 +79,7 @@ def edit_user(user_id):
 
         return render_template('user/edit.html', user=current_user, form=form)
     else:
-        return('unauthorized')
+        return('',403)
 
 @bp_users.route('/user/<int:user_id>/delete')
 @login_required
