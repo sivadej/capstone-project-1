@@ -13,6 +13,11 @@ input[type=checkbox] {
   padding: 10px;
 }
 
+.pagination > li > a {
+    background-color: black;
+    color: #FF3B30;
+}
+
 .checkboxtext {
   /* Checkbox text */
   font-size: 1em;

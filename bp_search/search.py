@@ -4,9 +4,15 @@ from models import db, User, Watchlist
 from api.api_requests import get_data
 from forms import MovieSearchForm
 import json
+import math
 from os import environ
 
 bp_search = Blueprint('bp_search', __name__, template_folder='templates', static_folder='static')
+
+def calc_pagination(total, per):
+    # using total and per = results per page,
+    # calculate total pages, round up to int
+    return math.ceil(total/per)
 
 @bp_search.route('/search', methods=['GET', 'POST'])
 def show_search():
@@ -48,6 +54,7 @@ def get_next_search_page(page_num):
     # store total results found because it is only available on page 1 of request
     if page_num == 1:
         session['total'] = movies['total']
+        session['pages'] = math.ceil(movies['total']/results_per_page)
     
     if session['total'] == 0:
         return render_template('search/search_noresults.html')
@@ -62,4 +69,5 @@ def get_next_search_page(page_num):
             next_page=(page_num+1),
             result_start=(((page_num-1)*results_per_page)+1),
             result_end=(page_num*results_per_page),
+            pages=session['pages'],
             )

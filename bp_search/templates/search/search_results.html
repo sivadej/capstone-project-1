@@ -31,9 +31,13 @@
   {% endfor %}
 </div>
 {% if total > 12 %}
-<div class="mb-4">
-  <form action="/search/results/{{next_page}}" method="GET"><button class="btn btn-warning btn-block">Next Page</button>
-  </form>
+<div class="text-center">
+  <h6>Jump to Page:</h6>
+  <nav><ul class="pagination">
+    {% for n in range(pages) %}
+    <li class="page-item"><a href="/search/results/{{n+1}}">{{n+1}}</a></li>
+    {% endfor %}
+  </ul></nav>
 </div>
 {% endif %}
 {% else %}
