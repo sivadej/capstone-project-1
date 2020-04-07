@@ -18,7 +18,6 @@ Data is pulled from the [Unofficial Netflix Global Search API](https://rapidapi.
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/)
 - [Postgres](https://www.postgresql.org/)
 - [Bootstrap](https://getbootstrap.com/)
-- [Axios](https://github.com/axios/axios)
 
 ##### Tools
 - VSCode
