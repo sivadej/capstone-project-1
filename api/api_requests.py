@@ -8,7 +8,7 @@ import importlib
 # set local development config vars if folder exists
 dev_config = importlib.util.find_spec('config')
 if dev_config is not None:
-    from config.app_config import API_HOST, API_KEY
+    from config.api_config import API_HOST, API_KEY
 else:
     API_HOST = environ.get('UNOGS_API_HOST')
     API_KEY = environ.get('UNOGS_API_KEY')
@@ -35,7 +35,7 @@ def get_data(audio, subs, start_year=1900, end_year=2020, offset=0, filter_movie
         raise
 
     # build API request
-    url = f'https://unogsng.p.rapidapi.com/search?end_year={end_year}&audiosubtitle_andor=and&start_year={start_year}&countrylist=78&limit={limit}&offset={offset}&audio={audio}&subtitle={subtitle}{vtype}'
+    url = f'https://unogsng.p.rapidapi.com/search?end_year={end_year}&audiosubtitle_andor=and&orderby=rating&start_year={start_year}&countrylist=78&limit={limit}&offset={offset}&audio={audio}&subtitle={subtitle}{vtype}'
     headers = {
         'x-rapidapi-host': API_HOST,
         'x-rapidapi-key': API_KEY,

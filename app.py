@@ -6,7 +6,6 @@ from os import environ
 
 # IMPORT AND REGISTER BLUEPRINTS
 
-from api.api_requests import get_data, get_movie_detail
 from bp_movie.movie import bp_movie
 from bp_search.search import bp_search
 from bp_users.users import bp_users
